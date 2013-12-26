@@ -6,7 +6,7 @@
  * @author Rasim Ashurov <rasim.ashurov@gmail.com>
  * @date 25 December 2013
  */
-class RException extends Exception
+class SSException extends Exception
 {
 	/**
 	 * Class construction
@@ -18,6 +18,7 @@ class RException extends Exception
 	public function __construct($message, $code = null, $previous = null)
 	{
 		die('Error: ' . $message);
+		parent::__construct($message);
 	}
 	
 }

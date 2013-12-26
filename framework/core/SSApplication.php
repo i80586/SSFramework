@@ -1,14 +1,12 @@
 <?php
 
-namespace SS;
-
 /**
  * Core class of Application
  * 
  * @author Rasim Ashurov <rasim.ashurov@gmail.com>
  * @date 25 December 2013
  */
-class Application
+class SSApplication
 {
 	/**
 	 * @var array 
@@ -19,7 +17,7 @@ class Application
 	 */
 	private static $_config;
 	/**
-	 * @var type 
+	 * @var type
 	 */
 	private static $_componentsList = array();
 	/**
@@ -30,10 +28,14 @@ class Application
 	
 	/**
 	 * Default autoload paths
-	 * @var array 
+	 * @var array
 	 */
-	private static $_defaultAutoLoadPaths = array('/application/controllers', '/application/models');
-	
+	private static $_defaultAutoLoadPaths = array(
+						'/application/controllers',
+						'/application/models',
+						'/framework/core'
+					);
+
 	/**
 	 * Class construction
 	 * @param array $config
@@ -56,7 +58,7 @@ class Application
 			}
 			self::registerComponent($componentName, is_array($componentParams) ? $componentParams : array());
 		}
-		
+
 		spl_autoload_register('self::loadClasses');
 	}
 	
@@ -108,18 +110,18 @@ class Application
 		$actionName = 'on' . ucfirst($action);
 		
 		if (!is_file(BASE_PATH . '/application/controllers/' . $controllerClass . '.php')) {
-			throw new RException(sprintf("Controller <b>%s</b> not found", $controllerClass)); 
+			throw new SSException(sprintf("Controller <b>%s</b> not found", $controllerClass));
 		}
 		
 		$reflectionMethod = new \ReflectionMethod($controllerClass, $actionName);
 		$reflactionClass = $reflectionMethod->getDeclaringClass();
 		
-		if (!$reflactionClass->isSubclassOf('Controller')) {
-			// Exception
+		if (!$reflactionClass->isSubclassOf('SSController')) {
+			throw new SSException(sprintf("Controller <b>%s</b> must be a child class of SSController", $controllerClass));
 		}
 		
 		if (!$reflactionClass->hasMethod($actionName)) {
-			throw new RException(sprintf("Action <b>%s</b> not found in <b>%s</b>", $action, $controllerClass)); 
+			throw new SSException(sprintf("Action <b>%s</b> not found in <b>%s</b>", $action, $controllerClass)); 
 		}
 		
 		$reflectionMethod->invoke($reflactionClass->newInstance());
@@ -155,7 +157,7 @@ class Application
 	private static function createComponent($name)
 	{
 		if (!isset(self::$_components[$name])) {
-			throw new RException('Undefined component: ' . $name);
+			throw new \Exception('Undefined component: ' . $name);
 		}
 		
 		$reflectionClass = new ReflectionClass($name);
@@ -185,6 +187,10 @@ class Application
 		return self::getComponent(ucfirst($name));
 	}
 	
+	/**
+	 * Get base url
+	 * @return type
+	 */
 	public static function getBaseUrl()
 	{
 		return isset(self::$_config['app']['baseUrl']) ? self::$_config['app']['baseUrl'] : '/';

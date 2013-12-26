@@ -1,10 +1,10 @@
 <?php
 
 define('BASE_PATH', __DIR__);
+define('SS_DIR', BASE_PATH . '/framework/core');
 
-$config = require BASE_PATH . '/config/default.php';
-require BASE_PATH . '/framework/core/Application.php';
+require SS_DIR . '/SSApplication.php';
 
-$app = new \SS\Application($config);
-\SS\Application::$classmap = include BASE_PATH . '/config/classMap.php';
+$app = new SSApplication(require BASE_PATH . '/config/default.php');
+SSApplication::$classmap = require BASE_PATH . '/config/classMap.php';
 $app->start();

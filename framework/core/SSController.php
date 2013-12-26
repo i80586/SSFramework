@@ -1,6 +1,5 @@
 <?php
 
-namespace SS;
 
 /**
  * Abstract class of controller
@@ -8,10 +7,10 @@ namespace SS;
  * @author Rasim Ashurov <rasim.ashurov@gmail.com>
  * @date 25 December 2013
  */
-abstract class Controller
+abstract class SSController
 {
 	/**
-	 * @var string 
+	 * @var string
 	 */
 	protected $layout = 'layouts/main';
 
@@ -56,18 +55,23 @@ abstract class Controller
 			include $viewFile;
 			return ob_get_clean();
 		} else {
-			throw new RException(sprintf("View <b>%s</b> not found at <i>%s</i>", $view, $viewFile));
+			throw new SSException(sprintf("View <b>%s</b> not found at <i>%s</i>", $view, $viewFile));
 		}
 	}
 	
+	/**
+	 * Redirect to url/route
+	 * @param type $route
+	 * @param array $params
+	 * @param type $redirectCode
+	 * @return type
+	 */
 	protected function redirect($route, array $params = array(), $redirectCode = 301)
 	{
 		if ('/' == substr($route, 0, 1)) {
 			$redirectUrl = $route;
 		} else {
-			$redirectUrl = Application::getBaseUrl() . '?r=' . preg_replace('/[^a-zA-Z\/]/', '', $route);
-
-			implode('&', $params);
+			$redirectUrl = SSApplication::getBaseUrl() . '?r=' . preg_replace('/[^a-zA-Z\/]/', '', $route);
 
 			$redirectUrl .= array_map(function($param, $value) {
 				return sprintf("&%s=%s", $param, $value);

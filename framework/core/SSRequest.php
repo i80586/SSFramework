@@ -6,7 +6,7 @@
  * @author Rasim Ashurov <rasim.ashurov@gmail.com>
  * @date 26 December 2013
  */
-class Request
+class SSRequest
 {
 	
 	/**
