@@ -1,4 +1,4 @@
 SSFramework
 ===========
 
-Smal &amp; Simple PHP micro-framework
+Small &amp; Simple PHP micro-framework
