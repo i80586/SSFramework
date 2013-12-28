@@ -1,12 +1,14 @@
 <?php
 
+namespace SS;
+
 /**
  * Core class of Application
  * 
  * @author Rasim Ashurov <rasim.ashurov@gmail.com>
  * @date 25 December 2013
  */
-class SSApplication
+class Application
 {
 	/**
 	 * @var array 
@@ -16,25 +18,6 @@ class SSApplication
 	 * @var string 
 	 */
 	private static $_config;
-	/**
-	 * @var type
-	 */
-	private static $_componentsList = array();
-	/**
-	 * Components list
-	 * @var array
-	 */
-	private static $_components = array();
-	
-	/**
-	 * Default autoload paths
-	 * @var array
-	 */
-	private static $_defaultAutoLoadPaths = array(
-						'/application/controllers',
-						'/application/models',
-						'/framework/core'
-					);
 
 	/**
 	 * Class construction
@@ -51,15 +34,14 @@ class SSApplication
 	 */
 	protected function init() 
 	{
-		// Register components
-		foreach (self::$_config['components'] as $componentName => $componentParams) {
-			if (is_int($componentName)) {
-				$componentName = $componentParams;
-			}
-			self::registerComponent($componentName, is_array($componentParams) ? $componentParams : array());
-		}
-
 		spl_autoload_register('self::loadClasses');
+		set_error_handler('\SS\Exception::catchError', 
+				E_ALL | 
+				E_NOTICE |
+				E_COMPILE_ERROR | 
+				E_COMPILE_WARNING | 
+				E_CORE_ERROR | E_CORE_WARNING | E_DEPRECATED | E_NOTICE | E_PARSE);
+		set_exception_handler(array('\SS\Exception', 'catchError'));
 	}
 	
 	/**
@@ -69,13 +51,19 @@ class SSApplication
 	 */
 	private static function loadClasses($class)
 	{
-		if (isset(self::$classmap[$class])) {
-			include self::$classmap[$class];
+		$className = trim($class, 'SS\\');
+				
+		if (isset(self::$classmap[$className])) {
+			include self::$classmap[$className];
 			return;
 		}
 		
-		foreach (self::$_defaultAutoLoadPaths as $path) {
-			$requiredFile = BASE_PATH . $path . DIRECTORY_SEPARATOR . $class . '.php';
+		foreach (self::$_config['defaultAutoLoadPaths'] as $path) {
+			$requiredFile = $path . DIRECTORY_SEPARATOR . $className . '.php';
+			
+			if (false === strpos($path, BASE_PATH)) {
+				$requiredFile = BASE_PATH . $requiredFile;
+			}
 			
 			if (is_file($requiredFile)) {
 				include $requiredFile;
@@ -116,8 +104,8 @@ class SSApplication
 		$reflectionMethod = new \ReflectionMethod($controllerClass, $actionName);
 		$reflactionClass = $reflectionMethod->getDeclaringClass();
 		
-		if (!$reflactionClass->isSubclassOf('SSController')) {
-			throw new SSException(sprintf("Controller <b>%s</b> must be a child class of SSController", $controllerClass));
+		if (!$reflactionClass->isSubclassOf('SS\Controller')) {
+			throw new SSException(sprintf("Controller <b>%s</b> must be a child class of SS\Controller", $controllerClass));
 		}
 		
 		if (!$reflactionClass->hasMethod($actionName)) {
@@ -128,46 +116,6 @@ class SSApplication
 	}
 
 	/**
-	 * Get component. If not exists, create it
-	 * @param string $name
-	 * @return object
-	 */
-	public static function getComponent($name) 
-	{
-		if (!isset(self::$_componentsList[$name])) {
-			self::createComponent($name);
-		}
-		
-		return self::$_componentsList[$name];
-	}
-	
-	/**
-	 * Create component
-	 * @param string $name
-	 */
-	private static function createComponent($name)
-	{
-		if (!isset(self::$_components[$name])) {
-			throw new SSException('Undefined component: ' . $name);
-		}
-		
-		$reflectionClass = new ReflectionClass($name);
-		self::$_componentsList[$name] = empty(self::$_components[$name]) ?
-											$reflectionClass->newInstance() : 
-											$reflectionClass->newInstance(self::$_components[$name]);
-	}
-	
-	/**
-	 * Register new component
-	 * @param string $name
-	 * @param array $params
-	 */
-	private static function registerComponent($name, array $params = array())
-	{
-		self::$_components[$name] = $params;
-	}
-	
-	/**
 	 * Magic method for catch static methods
 	 * @param type $name
 	 * @param type $arguments
@@ -175,7 +123,7 @@ class SSApplication
 	 */
 	public static function __callStatic($name, $arguments) 
 	{
-		return self::getComponent(ucfirst($name));
+		return \SS\Components::getComponent(ucfirst($name), $arguments);
 	}
 	
 	/**

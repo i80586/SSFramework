@@ -1,12 +1,14 @@
 <?php
 
+namespace SS;
+
 /**
  * Request class
  * 
  * @author Rasim Ashurov <rasim.ashurov@gmail.com>
  * @date 26 December 2013
  */
-class SSRequest
+class Request
 {
 	
 	/**

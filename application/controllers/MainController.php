@@ -6,14 +6,16 @@
  * @author Rasim Ashurov <rasim.ashurov@gmail.com>
  * @date 25 December 2013
  */
-class MainController extends SSController
+class MainController extends \SS\Controller
 {
 	/**
 	 * Index action
 	 */
 	public function onIndex()
 	{
-		echo SSApplication::request()->getQuery('');
+		//throw new SS\Exception('sadas');
+		echo $k; exit;
+		$this->renderPartial('error');
 	}
 	
 }

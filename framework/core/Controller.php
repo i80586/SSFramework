@@ -1,5 +1,6 @@
 <?php
 
+namespace SS;
 
 /**
  * Abstract class of controller
@@ -7,7 +8,7 @@
  * @author Rasim Ashurov <rasim.ashurov@gmail.com>
  * @date 25 December 2013
  */
-abstract class SSController
+abstract class Controller
 {
 	/**
 	 * @var string
