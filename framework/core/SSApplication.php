@@ -126,16 +126,7 @@ class SSApplication
 		
 		$reflectionMethod->invoke($reflactionClass->newInstance());
 	}
-	
-	/**
-	 * Get resources url
-	 * @return string
-	 */
-	public static function getStaticUrl()
-	{
-		return isset(self::$_config['app']['staticUrl']) ? self::$_config['app']['staticUrl'] : '/static';
-	}
-	
+
 	/**
 	 * Get component. If not exists, create it
 	 * @param string $name
@@ -157,7 +148,7 @@ class SSApplication
 	private static function createComponent($name)
 	{
 		if (!isset(self::$_components[$name])) {
-			throw new \Exception('Undefined component: ' . $name);
+			throw new SSException('Undefined component: ' . $name);
 		}
 		
 		$reflectionClass = new ReflectionClass($name);
@@ -194,5 +185,14 @@ class SSApplication
 	public static function getBaseUrl()
 	{
 		return isset(self::$_config['app']['baseUrl']) ? self::$_config['app']['baseUrl'] : '/';
+	}
+	
+	/**
+	 * Get resources url
+	 * @return string
+	 */
+	public static function getStaticUrl()
+	{
+		return isset(self::$_config['app']['staticUrl']) ? self::$_config['app']['staticUrl'] : '/static';
 	}
 }
