@@ -25,6 +25,7 @@ class Exception extends \Exception
 	 */
 	public function __construct($message = null, $code = null, $previous = null)
 	{
+		die($message);
 		//self::trace($code, $message, $errorLine, $errorString);
 	}
 	
