@@ -13,7 +13,7 @@ class MainController extends \SS\Controller
 	 */
 	public function onIndex()
 	{
-		$this->renderPartial('error');
+		echo '<b>' . SS\Application::getAppName() . '</b> is ready!';
 	}
 	
 }
