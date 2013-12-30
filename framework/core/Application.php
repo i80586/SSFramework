@@ -94,18 +94,18 @@ class Application
 		$actionName = 'on' . ucfirst($action);
 		
 		if (!is_file(BASE_PATH . '/application/controllers/' . $controllerClass . '.php')) {
-			throw new SSException(sprintf("Controller <b>%s</b> not found", $controllerClass));
+			throw new Exception(sprintf("Controller <b>%s</b> not found", $controllerClass));
 		}
 		
 		$reflectionMethod = new \ReflectionMethod($controllerClass, $actionName);
 		$reflactionClass = $reflectionMethod->getDeclaringClass();
 		
 		if (!$reflactionClass->isSubclassOf('SS\Controller')) {
-			throw new SSException(sprintf("Controller <b>%s</b> must be a child class of SS\Controller", $controllerClass));
+			throw new Exception(sprintf("Controller <b>%s</b> must be a child class of SS\Controller", $controllerClass));
 		}
 		
 		if (!$reflactionClass->hasMethod($actionName)) {
-			throw new SSException(sprintf("Action <b>%s</b> not found in <b>%s</b>", $action, $controllerClass)); 
+			throw new Exception(sprintf("Action <b>%s</b> not found in <b>%s</b>", $action, $controllerClass)); 
 		}
 		
 		$reflectionMethod->invoke($reflactionClass->newInstance());
