@@ -34,13 +34,9 @@ class Application
 	 */
 	protected function init() 
 	{
+		date_default_timezone_set(isset(self::$_config['app']['timezone']) ? self::$_config['app']['timezone'] : 'date_default_timezone_set()');
 		spl_autoload_register('self::loadClasses');
-		set_error_handler('\SS\Exception::catchError', 
-				E_ALL | 
-				E_NOTICE |
-				E_COMPILE_ERROR | 
-				E_COMPILE_WARNING | 
-				E_CORE_ERROR | E_CORE_WARNING | E_DEPRECATED | E_NOTICE | E_PARSE);
+		set_error_handler('\SS\Exception::catchError', E_ALL);
 		set_exception_handler(array('\SS\Exception', 'catchError'));
 	}
 	
@@ -142,5 +138,31 @@ class Application
 	public static function getStaticUrl()
 	{
 		return isset(self::$_config['app']['staticUrl']) ? self::$_config['app']['staticUrl'] : '/static';
+	}
+	
+	/**
+	 * Get version of the framework
+	 * @return string
+	 */
+	public static function getVersion()
+	{
+		return '0.1';
+	}
+	
+	/**
+	 * Get application name
+	 * @return string
+	 */
+	public static function getAppName()
+	{
+		return 'SSFramework ' . self::getVersion();
+	}
+	
+	/**
+	 * Stop application
+	 */
+	public static function stop()
+	{
+		exit;
 	}
 }

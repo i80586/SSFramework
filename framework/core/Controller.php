@@ -56,7 +56,7 @@ abstract class Controller
 			include $viewFile;
 			return ob_get_clean();
 		} else {
-			throw new SSException(sprintf("View <b>%s</b> not found at <i>%s</i>", $view, $viewFile));
+			throw new Exception(sprintf("View <b>%s</b> not found at <i>%s</i>", $view, $viewFile));
 		}
 	}
 	

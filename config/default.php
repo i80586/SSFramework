@@ -7,7 +7,8 @@ return array(
 	'app' => array(
 		'baseUrl' => '/',
 		'staticUrl' => '/static',
-		'defaultController' => 'main'
+		'defaultController' => 'main',
+		'timezone' => 'Asia/Baku'
 	),
 	'defaultAutoLoadPaths' => array(
 		FRAMEWORK_DIR . 'core',

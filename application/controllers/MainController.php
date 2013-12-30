@@ -13,8 +13,6 @@ class MainController extends \SS\Controller
 	 */
 	public function onIndex()
 	{
-		//throw new SS\Exception('sadas');
-		echo $k; exit;
 		$this->renderPartial('error');
 	}
 	
