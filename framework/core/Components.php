@@ -45,9 +45,9 @@ class Components
 	protected static function createComponent($name)
 	{
 		if (!isset(self::$_components[$name])) {
-			throw new \SS\Exception('Undefined component: ' . $name);
+			throw new Exception('Undefined component: ' . $name);
 		}
-		
+
 		$reflectionClass = new \ReflectionClass($name);
 		self::$_componentsList[$name] = empty(self::$_components[$name]) ?
 											$reflectionClass->newInstance() : 

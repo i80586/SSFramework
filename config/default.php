@@ -12,7 +12,7 @@ return array(
 	),
 	'defaultAutoLoadPaths' => array(
 		FRAMEWORK_DIR . 'core',
-		FRAMEWORK_DIR . 'components',
+		FRAMEWORK_DIR . 'core/components',
 		'/application/controllers',
 		'/application/models',
 	)

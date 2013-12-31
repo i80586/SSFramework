@@ -25,8 +25,8 @@ class Exception extends \Exception
 	 */
 	public function __construct($message = null, $code = null, $previous = null)
 	{
-		die($message);
-		//self::trace($code, $message, $errorLine, $errorString);
+		self::trace(self::ERR_EXCEPTION, $message);
+		Application::stop();
 	}
 	
 	/**
@@ -39,22 +39,30 @@ class Exception extends \Exception
 	 */
 	public static function catchError($errno, $errstr, $errfile = '', $errline = 0, $errcontext = array())
 	{
-		self::trace(self::ERR_PHPERROR, $errfile, $errline, $errstr);
-		Application::stop();
+		self::trace(self::ERR_PHPERROR, $errstr, $errfile, $errline);
+	}
+	
+	/**
+	 * Catch exception
+	 * @param string $message
+	 */
+	public static function catchException($message)
+	{
+		self::trace(self::ERR_EXCEPTION, $message);
 	}
 	
 	/**
 	 * Generate error trace
-	 * @param integer $errorType
-	 * @param string $errorFile
-	 * @param string $errorLine
-	 * @param string $errorString
+	 * @param string $header
+	 * @param string $message
+	 * @param mixed $errorFile
 	 */
-	private static function trace($errorType, $errorFile, $errorLine, $errorString)
+	protected static function trace($errorType, $message, $errorFile = null, $errorLine = null)
 	{
-		$fileLines = file($errorFile);
+		$header = $errorType === self::ERR_EXCEPTION ? 'SS\Exception' : 'PHP Error';
 		include FRAMEWORK_DIR . 'core/views/error.php';
+		Application::stop();
 	}
-	
-	
+
+
 }

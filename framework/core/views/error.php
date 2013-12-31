@@ -2,7 +2,7 @@
 <html>
 	<head>
 		<meta charset="utf-8">
-		<title><?= $errorType == \SS\Exception::ERR_EXCEPTION ? '\SS\Exception' : 'PHP Error' ?></title>
+		<title><?= $header ?></title>
 
 		<style type="text/css">
 			/*<![CDATA[*/
@@ -18,8 +18,8 @@
 
 			body {
 				font: normal 9pt "Verdana";
-				color: white;
-				background: black;
+				color: black;
+				background: white;
 			}
 
 			h1 {
@@ -27,6 +27,7 @@
 				color: #f00;
 				font-weight: bold;
 				margin-bottom: .5em;
+				margin-top: 20px;
 			}
 
 			h2 {
@@ -73,13 +74,14 @@
 			.message {
 				padding: 1em;
 				font-size: 11pt;
-				background: #35352E;
+				background: #ffe;
 				-webkit-border-radius: 10px;
 				-moz-border-radius: 10px;
 				border-radius: 10px;
 				margin-bottom: 1em;
 				line-height: 160%;
-				color: white;
+				color: black;
+				border: 1px solid #eee;
 			}
 
 			.source {
@@ -156,25 +158,15 @@
 	</head>
 	<body>
 		<div class="container">
-			<h1><?= $errorType == \SS\Exception::ERR_EXCEPTION ? '\SS\Exception' : 'PHP Error' ?></h1>
+			<h1><?= $header ?></h1>
+			
+			<?php if (null !== $errorFile): ?>
+				<p class="trace-file"><?= $errorFile ?> (<?= $errorLine ?>)</p>
+			<?php endif; ?>
 
 			<p class="message">
-				<?= $errorString ?>
+				<?= $message ?>
 			</p>
-
-			<div class="source">
-				<p class="file"><?= $errorFile ?>(<?= $errorLine ?>)</p>
-				<div class="code">
-<pre>
-<?php for($i = $errorLine - 5; $i <= $errorLine + 5; $i++): ?>
-<?php if ($errorLine - 1 == $i): ?>
-<span class="error"><span class="ln error-ln"><?= $i + 1 ?></span><?= $fileLines[$i] ?></span><?php else: ?>
-<span class="ln"><?= $i + 1 ?></span><?= isset($fileLines[$i]) ? $fileLines[$i] : "\n" ?>
-<?php endif; ?>
-<?php endfor; ?>
-</pre>
-				</div>	
-			</div>
 
 			<div class="version">
 				<?= date('Y-m-d h:i:s') ?> <?= $_SERVER['SERVER_SOFTWARE'] ?> <?= SS\Application::getAppName() ?>	

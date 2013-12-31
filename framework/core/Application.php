@@ -37,7 +37,7 @@ class Application
 		date_default_timezone_set(isset(self::$_config['app']['timezone']) ? self::$_config['app']['timezone'] : 'date_default_timezone_set()');
 		spl_autoload_register('self::loadClasses');
 		set_error_handler('\SS\Exception::catchError', E_ALL);
-		set_exception_handler(array('\SS\Exception', 'catchError'));
+		set_exception_handler('\SS\Exception::catchException');
 	}
 	
 	/**
@@ -119,7 +119,7 @@ class Application
 	 */
 	public static function __callStatic($name, $arguments) 
 	{
-		return \SS\Components::getComponent(ucfirst($name), $arguments);
+		return Components::getComponent(ucfirst($name), $arguments);
 	}
 	
 	/**
