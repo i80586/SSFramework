@@ -13,7 +13,6 @@ class MainController extends \SS\Controller
 	 */
 	public function onIndex()
 	{
-		echo $k;
 		echo '<b>' . SS\Application::getAppName() . '</b> is ready!';
 	}
 	
