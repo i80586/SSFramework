@@ -8,7 +8,7 @@ namespace SS;
  * @author Rasim Ashurov <rasim.ashurov@gmail.com>
  * @date 25 December 2013
  */
-class Exception extends \Exception
+class Exception
 {
 	/**
 	 * Error types contants
@@ -18,15 +18,13 @@ class Exception extends \Exception
 	
 	/**
 	 * Class construction
-	 * Throw error
-	 * @param string $message
-	 * @param integer $code
-	 * @param mixed $previous
+	 * Generate message
+	 * @param type $message
+	 * @param array $params
 	 */
-	public function __construct($message = null, $code = null, $previous = null)
+	public function __construct($message, array $params = array())
 	{
-		self::trace(self::ERR_EXCEPTION, $message);
-		Application::stop();
+		self::catchException(str_replace(array_keys($params), array_values($params), $message));
 	}
 	
 	/**

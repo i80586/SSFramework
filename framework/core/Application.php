@@ -94,18 +94,18 @@ class Application
 		$actionName = 'on' . ucfirst($action);
 		
 		if (!is_file(BASE_PATH . '/application/controllers/' . $controllerClass . '.php')) {
-			throw new Exception(sprintf("Controller <b>%s</b> not found", $controllerClass));
+			throw new Exception("Controller <b>:c</b> not found", array(':c' => $controllerClass));
 		}
 		
 		$reflectionMethod = new \ReflectionMethod($controllerClass, $actionName);
 		$reflactionClass = $reflectionMethod->getDeclaringClass();
 		
-		if (!$reflactionClass->isSubclassOf('SS\Controller')) {
-			throw new Exception(sprintf("Controller <b>%s</b> must be a child class of SS\Controller", $controllerClass));
+		if (!$reflactionClass->isSubclassOf('\Controller')) {
+			throw new Exception("Controller <b>:c</b> must be a child class of \Controller", array(':c' => $controllerClass));
 		}
 		
 		if (!$reflactionClass->hasMethod($actionName)) {
-			throw new Exception(sprintf("Action <b>%s</b> not found in <b>%s</b>", $action, $controllerClass)); 
+			throw new Exception("Action <b>:a</b> not found in <b>%c</b>", array(':a' => $action, ':c' => $controllerClass)); 
 		}
 		
 		$reflectionMethod->invoke($reflactionClass->newInstance());
@@ -141,21 +141,21 @@ class Application
 	}
 	
 	/**
-	 * Get version of the framework
-	 * @return string
-	 */
-	public static function getVersion()
-	{
-		return '0.1';
-	}
-	
-	/**
 	 * Get application name
 	 * @return string
 	 */
 	public static function getAppName()
 	{
 		return 'SSFramework ' . self::getVersion();
+	}
+	
+	/**
+	 * Get version of the framework
+	 * @return string
+	 */
+	public static function getVersion()
+	{
+		return '0.1';
 	}
 	
 	/**

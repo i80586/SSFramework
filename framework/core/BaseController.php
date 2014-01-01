@@ -8,12 +8,20 @@ namespace SS;
  * @author Rasim Ashurov <rasim.ashurov@gmail.com>
  * @date 25 December 2013
  */
-abstract class Controller
+abstract class BaseController
 {
+	
 	/**
+	 * Layout for views
 	 * @var string
 	 */
-	protected $layout = 'layouts/main';
+	protected $layout;
+	
+	/**
+	 * Title of page
+	 * @var string 
+	 */
+	protected $pageTitle;
 
 	/**
 	 * Render view file with layout
@@ -24,7 +32,10 @@ abstract class Controller
 	{
 		$layoutFile = BASE_PATH . '/application/views/' . $this->layout . '.php';
 		$content = $this->processView($view, $data);
-		include $layoutFile;
+		
+		if (is_file($layoutFile)) {
+			include $layoutFile;
+		}
 	}
 	
 	/**
@@ -56,7 +67,7 @@ abstract class Controller
 			include $viewFile;
 			return ob_get_clean();
 		} else {
-			throw new Exception(sprintf("View <b>%s</b> not found at <i>%s</i>", $view, $viewFile));
+			throw new Exception("View <b>:v</b> not found at <i>%f</i>", array(':v' => $view, ':f' => $viewFile));
 		}
 	}
 	
@@ -72,7 +83,7 @@ abstract class Controller
 		if ('/' == substr($route, 0, 1)) {
 			$redirectUrl = $route;
 		} else {
-			$redirectUrl = SSApplication::getBaseUrl() . '?r=' . preg_replace('/[^a-zA-Z\/]/', '', $route);
+			$redirectUrl = Application::getBaseUrl() . '?r=' . preg_replace('/[^a-zA-Z\/]/', '', $route);
 
 			$redirectUrl .= array_map(function($param, $value) {
 				return sprintf("&%s=%s", $param, $value);
@@ -81,6 +92,24 @@ abstract class Controller
 		
 		header("HTTP/1.1 ". $redirectCode ." Moved Permanently"); 
 		header("Location: " . $redirectUrl);
+	}
+	
+	/**
+	 * Get page title
+	 * @return string
+	 */
+	public function getPageTitle()
+	{
+		return $this->pageTitle;
+	}
+	
+	/**
+	 * Set current page title
+	 * @param string $pageTitle
+	 */
+	public function setPageTitle($pageTitle)
+	{
+		$this->pageTitle = $pageTitle;
 	}
 	
 }
