@@ -12,19 +12,19 @@ namespace SS;
 abstract class Model
 {
 	/**
-	 * Attributes of model
-	 * @var type 
+	 * Attributes array
+	 * @var array 
 	 */
 	public $attributes = [];
 	
 	/**
-	 * 
-	 * @param type $name
+	 * Get attribute
+	 * @param string $name
 	 */
 	public function __get($name)
 	{
 		if (!isset($this->attributes[$name])) {
-			// throw exception
+			throw new Exception('Attribute <b>:a</b> not found in <b>:m</b> model', array(':a' => $name, ':m' => get_class($this)));
 		}
 		
 		return $this->attributes[$name];
@@ -38,5 +38,5 @@ abstract class Model
 	{
 		$this->attributes = $attributes;
 	}
-	
+
 }
