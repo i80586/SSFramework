@@ -18,6 +18,12 @@ abstract class Model
 	public $attributes = [];
 	
 	/**
+	 * Database handler
+	 * @var SS\Database 
+	 */
+	private static $_dbHandler = null;
+	
+	/**
 	 * Get attribute
 	 * @param string $name
 	 */
@@ -37,6 +43,19 @@ abstract class Model
 	public function applyAttributes(array $attributes)
 	{
 		$this->attributes = $attributes;
+	}
+	
+	/**
+	 * Returns database handler
+	 * @return SS\Database
+	 */
+	public static function db()
+	{
+		if (null === self::$_dbHandler) {
+			self::$_dbHandler = new Database();
+		}
+		
+		return self::$_dbHandler;
 	}
 
 }
