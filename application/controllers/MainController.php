@@ -15,6 +15,10 @@ class MainController extends Controller
 	 */
 	public function onIndex()
 	{
+		$m = new Post();
+		$m->applyAttributes(array('value' => 'asdd'));
+		echo $m->value;
+		
 		echo Application::getAppName() . ' is ready!';
 	}
 	

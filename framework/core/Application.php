@@ -141,6 +141,39 @@ class Application
 	}
 	
 	/**
+	 * Get current configuration
+	 * @return array
+	 */
+	public static function getConfig()
+	{
+		return self::$_config;
+	}
+	
+	/**
+	 * Structured data dumper
+	 * @param mixed $data
+	 * @param boolean $terminate
+	 */
+	public static function dump($data, $terminate = true)
+	{
+		$isBrowser = isset($_SERVER['HTTP_USER_AGENT']);
+		
+		if ($isBrowser) {
+			echo '<pre>';
+		}
+		
+		print_r($data);
+		
+		if ($isBrowser) {
+			echo '</pre>';
+		}
+		
+		if ($terminate) {
+			self::stop();
+		}
+	}
+	
+	/**
 	 * Get application name
 	 * @return string
 	 */
