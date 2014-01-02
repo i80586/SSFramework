@@ -3,40 +3,111 @@
 namespace SS;
 
 /**
- * Class Model
- * Core class of all models
+ * Class Database
+ * Simple wrapper for PDO
  * 
  * @author Rasim Ashurov <rasim.ashurov@gmail.com>
- * @date 1 January 2013
+ * @date 2 January 2013
  */
-abstract class Model
+class Database
 {
 	/**
-	 * Attributes array
-	 * @var array 
+	 * PDO handler
+	 * @var \PDO 
 	 */
-	public $attributes = [];
+	private $_pdoHandler = null;
 	
 	/**
-	 * Get attribute
-	 * @param string $name
+	 * Current PDO statement
+	 * @var \PDOStatement
 	 */
-	public function __get($name)
+	private $_pdoStatement = false;
+	
+	/**
+	 * Default fetch mode
+	 * @var integer 
+	 */
+	private $_defaultFetchMode = \PDO::FETCH_ASSOC;
+	
+	/**
+	 * Class construction
+	 * @throws Exception
+	 */
+	public function __construct()
 	{
-		if (!isset($this->attributes[$name])) {
-			throw new Exception('Attribute <b>:a</b> not found in <b>:m</b> model', array(':a' => $name, ':m' => get_class($this)));
+		if (null === $this->_pdoHandler) {
+			$dbConfig = isset(Application::getConfig()['db']) ? Application::getConfig()['db'] : null;
+			
+			if (null === $dbConfig) {
+				throw new Exception('Database connection is not set');
+			}
+			
+			$this->_pdoHandler = new \PDO($dbConfig['dsn'], $dbConfig['username'], $dbConfig['password'], array(
+				\PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES ' . $dbConfig['encoding']
+			));
 		}
-		
-		return $this->attributes[$name];
 	}
 	
 	/**
-	 * Apply attributes
-	 * @param array $attributes
+	 * Check for PDO statement
+	 * @throws Exception
 	 */
-	public function applyAttributes(array $attributes)
+	private function checkStatement()
 	{
-		$this->attributes = $attributes;
+		if (false === $this->_pdoStatement) {
+			throw new Exception('Statement is invalid');
+		} else {
+			$this->_pdoStatement->execute();
+		}
+	}
+	
+	/**
+	 * Run query
+	 * @param type $query
+	 * @param type $params
+	 */
+	public function setQuery($query, array $params = array(), $execute = true)
+	{
+		$this->_pdoStatement = $this->_pdoHandler->prepare($query);
+		
+		if ($execute) {
+			$this->_pdoStatement->execute($params);
+		}
+		
+		return $this;
+	}
+	
+	/**
+	 * Get record
+	 * @param integer $fetchType
+	 * @return array
+	 */
+	public function get()
+	{
+		$this->checkStatement();
+		return $this->_pdoStatement->fetch($this->_defaultFetchMode);
+	}
+	
+	/**
+	 * Get all records
+	 * @return array
+	 */
+	public function getAll()
+	{
+		$this->checkStatement();
+		$this->_pdoStatement->fetchAll($this->_defaultFetchMode);
+	}
+		
+	/**
+	 * Catch called method
+	 * @param string $name
+	 * @param array $arguments
+	 */
+	public function __call($name, $arguments)
+	{
+		if (false !== $this->_pdoStatement) {
+			call_user_func_array(array($this->_pdoStatement, $name), $arguments);
+		}
 	}
 
 }
