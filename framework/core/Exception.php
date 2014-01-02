@@ -3,7 +3,7 @@
 namespace SS;
 
 /**
- * RException class file
+ * Exception class file
  * 
  * @author Rasim Ashurov <rasim.ashurov@gmail.com>
  * @date 25 December 2013
