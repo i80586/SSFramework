@@ -11,7 +11,17 @@ return array(
 		'timezone' => 'Asia/Baku'
 	),
 	
-	// don't clear. you can insert new directory
+	/**
+	 * Clear comments if you'll use database
+	'db' => array(
+		'dsn' => 'mysql:host=localhost;dbname=test;',
+		'username' => 'root',
+		'password' => '',
+		'encoding' => 'utf8'
+	),
+	 * */
+	
+	/* don't clear. but you can insert new directory */
 	'defaultAutoLoadPaths' => array(
 		FRAMEWORK_DIR . 'core',
 		FRAMEWORK_DIR . 'components',
