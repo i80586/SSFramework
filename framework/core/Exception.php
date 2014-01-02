@@ -51,9 +51,10 @@ class Exception
 	
 	/**
 	 * Generate error trace
-	 * @param string $header
+	 * @param integer $errorType
 	 * @param string $message
-	 * @param mixed $errorFile
+	 * @param string $errorFile
+	 * @param integer $errorLine
 	 */
 	protected static function trace($errorType, $message, $errorFile = null, $errorLine = null)
 	{
