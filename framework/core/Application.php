@@ -97,7 +97,13 @@ class Application
 			throw new Exception("Controller <b>:c</b> not found", array(':c' => $controllerClass));
 		}
 		
-		$reflectionMethod = new \ReflectionMethod($controllerClass, $actionName);
+		try {
+			$reflectionMethod = new \ReflectionMethod($controllerClass, $actionName);
+		} catch (\ReflectionException $e) {
+			throw new Exception('Action <b>:a</b> not found in <b>:c</b>.', 
+					array(':a' => $action, ':c' => $controllerClass));
+		}
+		
 		$reflactionClass = $reflectionMethod->getDeclaringClass();
 		
 		if (!$reflactionClass->isSubclassOf('\Controller')) {
