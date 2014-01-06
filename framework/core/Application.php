@@ -18,6 +18,12 @@ class Application
 	 * @var string 
 	 */
 	private static $_config;
+	
+	/**
+	 * Database handler
+	 * @var SS\Database 
+	 */
+	private static $_dbHandler = null;
 
 	/**
 	 * Class construction
@@ -115,6 +121,19 @@ class Application
 		}
 		
 		$reflectionMethod->invoke($reflactionClass->newInstance());
+	}
+	
+	/**
+	 * Returns database handler
+	 * @return SS\Database
+	 */
+	public static function db()
+	{
+		if (null === self::$_dbHandler) {
+			self::$_dbHandler = new Database();
+		}
+		
+		return self::$_dbHandler;
 	}
 
 	/**
