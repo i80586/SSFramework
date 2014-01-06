@@ -162,17 +162,7 @@ class Application
 	 */
 	public static function dump($data, $terminate = true)
 	{
-		$isBrowser = isset($_SERVER['HTTP_USER_AGENT']);
-		
-		if ($isBrowser) {
-			echo '<pre>';
-		}
-		
-		print_r($data);
-		
-		if ($isBrowser) {
-			echo '</pre>';
-		}
+		Dumper::dump($data);
 		
 		if ($terminate) {
 			self::stop();
