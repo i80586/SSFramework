@@ -95,7 +95,7 @@ class Database
 	public function getAll()
 	{
 		$this->checkStatement();
-		$this->_pdoStatement->fetchAll($this->_defaultFetchMode);
+		return $this->_pdoStatement->fetchAll($this->_defaultFetchMode);
 	}
 		
 	/**
