@@ -106,7 +106,7 @@ class Database
 	public function __call($name, $arguments)
 	{
 		if (false !== $this->_pdoStatement) {
-			call_user_func_array(array($this->_pdoStatement, $name), $arguments);
+			return call_user_func_array(array($this->_pdoStatement, $name), $arguments);
 		}
 	}
 
