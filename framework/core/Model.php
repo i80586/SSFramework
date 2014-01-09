@@ -18,8 +18,7 @@ abstract class Model
 	public $attributes = [];
 	
 	/**
-	 * Get model object.
-	 * It will be created if not exists
+	 * Get model instance.
 	 * @return object
 	 */
 	public static function model()
