@@ -82,7 +82,7 @@ class Dumper
 				}
 				break;
 			case 'object':
-				if (($id = array_search($var, $objects, true)) !== false) {
+				if (($id = array_search($var, self::$_objects, true)) !== false) {
 					self::$_output .= get_class($var) . '#' . ($id + 1) . '(...)';
 				}
 				
