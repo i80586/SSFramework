@@ -73,10 +73,9 @@ abstract class BaseController
 	
 	/**
 	 * Redirect to url/route
-	 * @param type $route
+	 * @param string $route
 	 * @param array $params
-	 * @param type $redirectCode
-	 * @return type
+	 * @param integer $redirectCode
 	 */
 	protected function redirect($route, array $params = array(), $redirectCode = 301)
 	{
