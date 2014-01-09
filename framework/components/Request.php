@@ -60,17 +60,14 @@ class Request
 	}
 
 	/**
-	 * Returns the request URI portion for the currently requested URL.
-	 * This refers to the portion that is after the {@link hostInfo host info} part.
-	 * It includes the {@link queryString query string} part if any.
-	 * The implementation of this method referenced Zend_Controller_Request_Http in Zend Framework.
-	 * @return string the request URI portion for the currently requested URL.
-	 * @throws CException if the request URI cannot be determined due to improper server configuration
+	 * Get request url
+	 * @return string
+	 * @throws Exception
 	 */
 	public function getRequestUri()
 	{
 		if (null === $this->_requestUri) {
-			if (isset($_SERVER['HTTP_X_REWRITE_URL'])) { // IIS
+			if (isset($_SERVER['HTTP_X_REWRITE_URL'])) {
 				$this->_requestUri = $_SERVER['HTTP_X_REWRITE_URL'];
 			} elseif (isset($_SERVER['REQUEST_URI'])) {
 				$this->_requestUri = $_SERVER['REQUEST_URI'];
@@ -82,7 +79,7 @@ class Request
 				} else {
 					$this->_requestUri = preg_replace('/^(http|https):\/\/[^\/]+/i', '', $this->_requestUri);
 				}
-			} elseif (isset($_SERVER['ORIG_PATH_INFO'])) {  // IIS 5.0 CGI
+			} elseif (isset($_SERVER['ORIG_PATH_INFO'])) {
 				$this->_requestUri = $_SERVER['ORIG_PATH_INFO'];
 				
 				if (!empty($_SERVER['QUERY_STRING'])) {
