@@ -11,11 +11,13 @@ namespace SS;
 class Application
 {
 	/**
+	 * Class paths to autoloading
 	 * @var array 
 	 */
 	public static $classmap = [];
 	/**
-	 * @var string 
+	 * Application config
+	 * @var array 
 	 */
 	private static $_config;
 	
@@ -40,7 +42,9 @@ class Application
 	 */
 	protected function init() 
 	{
-		date_default_timezone_set(isset(self::$_config['app']['timezone']) ? self::$_config['app']['timezone'] : 'date_default_timezone_set()');
+		if (isset(self::$_config['app']['timezone'])) {
+			date_default_timezone_set(self::$_config['app']['timezone']);
+		}
 		spl_autoload_register('self::loadClasses');
 		set_error_handler('\SS\Exception::catchError', E_ALL);
 		set_exception_handler('\SS\Exception::catchException');
