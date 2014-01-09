@@ -80,7 +80,7 @@ abstract class BaseController
 	 */
 	protected function redirect($route, array $params = array(), $redirectCode = 301)
 	{
-		if ('/' == substr($route, 0, 1) || strpos('http://', $route) !== false || strpos('https://', $route)) {
+		if (('/' == substr($route, 0, 1)) || (false !== strpos('http://', $route)) || (false !== strpos('https://', $route))) {
 			$redirectUrl = $route;
 		} else {
 			$redirectUrl = Application::getBaseUrl() . '?r=' . preg_replace('/[^a-zA-Z\/]/', '', $route);
