@@ -15,7 +15,7 @@ class MainController extends Controller
 	 */
 	public function onIndex()
 	{
-		echo Application::getAppName() . ' is ready!';
+		$this->renderPartial('wellcome');
 	}
 	
 }
