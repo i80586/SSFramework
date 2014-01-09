@@ -80,7 +80,7 @@ abstract class BaseController
 	 */
 	protected function redirect($route, array $params = array(), $redirectCode = 301)
 	{
-		if ('/' == substr($route, 0, 1)) {
+		if ('/' == substr($route, 0, 1) || strpos('http://', $route) !== false || strpos('https://', $route)) {
 			$redirectUrl = $route;
 		} else {
 			$redirectUrl = Application::getBaseUrl() . '?r=' . preg_replace('/[^a-zA-Z\/]/', '', $route);
@@ -90,8 +90,7 @@ abstract class BaseController
 			}, array_keys($params), array_values($params))[0];
 		}
 		
-		header("HTTP/1.1 ". $redirectCode ." Moved Permanently"); 
-		header("Location: " . $redirectUrl);
+		header("Location: " . $redirectUrl, true, $redirectCode);
 	}
 	
 	/**
