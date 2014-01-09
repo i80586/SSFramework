@@ -35,6 +35,8 @@ abstract class BaseController
 		
 		if (is_file($layoutFile)) {
 			include $layoutFile;
+		} else {
+			echo $content;
 		}
 	}
 	
