@@ -26,8 +26,8 @@ abstract class Model
 		static $owner = null;
 		
 		if (null === $owner) {
-			$reflectionClass = new \ReflectionClass(get_called_class());
-			$owner = $reflectionClass->newInstance();
+			$ownerClassName = get_called_class();
+			$owner = new $ownerClassName();
 		}
 		
 		return $owner;
