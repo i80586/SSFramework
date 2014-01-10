@@ -45,7 +45,39 @@ class Database
 			$this->_pdoHandler = new \PDO($dbConfig['dsn'], $dbConfig['username'], $dbConfig['password'], array(
 				\PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES ' . $dbConfig['encoding']
 			));
+			
+			$this->_pdoHandler->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+			$this->_pdoHandler->setAttribute(\PDO::ATTR_EMULATE_PREPARES, false);
 		}
+	}
+	
+	/**
+	 * Quote value
+	 * @param mixed $value
+	 * @return mixed
+	 */
+	public function quoteValue($value)
+	{
+		if (is_int($value) || is_float($value)) {
+			return $value;
+		}
+		
+		if (false !== ($value=$this->_pdoHandler->quote($value))) {
+			return $value;
+		} else {
+			return "'" . addcslashes(str_replace("'", "''", $value), "\000\n\r\\\032") . "'";
+		}
+	}
+	
+	/**
+	 * Apply params to string
+	 * @param string $string
+	 * @param array $params
+	 * @return string
+	 */
+	private function applyParams($string, array $params)
+	{
+		return str_replace(array_keys($params), array_values($params), $string);
 	}
 	
 	/**
@@ -96,6 +128,34 @@ class Database
 	{
 		$this->checkStatement();
 		return $this->_pdoStatement->fetchAll($this->_defaultFetchMode);
+	}
+	
+	/**
+	 * Insert new row into table
+	 * @param string $tableName
+	 * @param array $columns
+	 * @return mixed
+	 */
+	public function insert($tableName, array $columns)
+	{
+		$fields = '`' . implode('`,`', array_keys($columns)) . '`';
+		$values = implode(',', array_map(function($value) {
+											return $this->quoteValue($value); 
+										}, array_values($columns)));
+		
+		$query = $this->applyParams("INSERT INTO :table (:columns) VALUES (:values)", [
+			':table' => '`' . $tableName . '`',
+			':columns' => $fields,
+			':values' => $values
+		]);
+				
+		$this->_pdoStatement = $this->_pdoHandler->prepare($query);
+		
+		if (false === $this->_pdoStatement->execute()) {
+			return false;
+		}
+			
+		return $this->_pdoStatement->rowCount();
 	}
 		
 	/**
