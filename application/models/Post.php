@@ -5,6 +5,5 @@
  */
 class Post extends SS\Model
 {
-	
-	
+    
 }

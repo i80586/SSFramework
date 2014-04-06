@@ -3,7 +3,6 @@
 /**
  * Application classmap array
  */
-return array(
-	
-	
-);
+return [
+    
+];

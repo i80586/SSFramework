@@ -8,11 +8,10 @@
  */
 class Controller extends \SS\BaseController
 {
-	
-	/**
-	 * @var string
-	 */
-	protected $layout = 'layouts/main';
-	
-	
+
+    /**
+     * @var string
+     */
+    protected $layout = 'layout/main';
+
 }

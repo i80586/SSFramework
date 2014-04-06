@@ -10,12 +10,13 @@ use SS\Application;
  */
 class MainController extends Controller
 {
-	/**
-	 * Index action
-	 */
-	public function onIndex()
-	{
-		$this->renderPartial('wellcome');
-	}
-	
+
+    /**
+     * Index action
+     */
+    public function onIndex()
+    {
+        $this->renderPartial('wellcome');
+    }
+
 }

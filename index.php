@@ -1,5 +1,4 @@
 <?php
-
 define('BASE_PATH', __DIR__);
 define('FRAMEWORK_DIR', BASE_PATH . '/framework/');
 
