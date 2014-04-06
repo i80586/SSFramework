@@ -96,8 +96,9 @@ class Database
 
     /**
      * Run query
-     * @param type $query
-     * @param type $params
+     * @param string $query
+     * @param array $params
+     * @param boolean $execute
      */
     public function setQuery($query, array $params = array(), $execute = true)
     {
