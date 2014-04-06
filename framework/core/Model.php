@@ -45,18 +45,16 @@ abstract class Model
 
     /**
      * Check for existing attribute
-     * @param type $attributeName
+     * @param string $name
      * @throws Exception
      */
     private function attributeExists($name)
     {
-        $attributeExists = isset($this->attributes[$name]);
-
-        if (!$attributeExists) {
-            throw new Exception('Attribute <b>:a</b> not found in <b>:m</b> model', array(':a' => $name, ':m' => get_class($this)));
+        if (!isset($this->attributes[$name])) {
+            throw new Exception('Attribute <b>:a</b> not found in <b>:m</b> model', 
+                    [':a' => $name, ':m' => get_class($this)]);
         }
-
-        return $attributeExists;
+        return true;
     }
 
     /**
@@ -72,10 +70,10 @@ abstract class Model
     }
 
     /**
-     * Apply attributes
+     * Set attributes
      * @param array $attributes
      */
-    public function applyAttributes(array $attributes)
+    public function setAttributes(array $attributes)
     {
         $this->attributes = $attributes;
     }
