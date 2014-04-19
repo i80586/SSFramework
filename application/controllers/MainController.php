@@ -2,8 +2,6 @@
 
 namespace SS\application\controllers;
 
-use SS\framework\core\Application;
-
 /**
  * MainController file
  * 

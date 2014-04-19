@@ -2,7 +2,6 @@
 
 namespace SS\framework\core;
 
-use SS\framework\components\Dumper;
 use \SS\framework\core\Exception;
 
 /**
@@ -161,7 +160,7 @@ class Application
      */
     public static function dump($data, $terminate = true)
     {
-        Dumper::dump($data);
+        \SS\framework\components\Dumper::dump($data);
 
         if ($terminate) {
             self::stop();
