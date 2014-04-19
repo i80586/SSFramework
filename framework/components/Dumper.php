@@ -1,6 +1,6 @@
 <?php
 
-namespace SS;
+namespace SS\framework\components;
 
 /**
  * SS\Dumper class file
@@ -15,7 +15,7 @@ class Dumper
     /**
      * @var array 
      */
-    private static $_objects = array();
+    private static $_objects = [];
 
     /**
      * @var string

@@ -1,6 +1,6 @@
 <?php
 
-namespace SS;
+namespace SS\framework\components;
 
 /**
  * Request class
@@ -50,9 +50,9 @@ class Request
 
     /**
      * Returns the named GET or POST parameter value.
-     * @param type $name
+     * @param string $name
      * @param mixed $defaultValue
-     * @return type
+     * @return mixed
      */
     public function getParam($name, $defaultValue = null)
     {
@@ -62,7 +62,7 @@ class Request
     /**
      * Get request url
      * @return string
-     * @throws Exception
+     * @throws SS\framework\core\Exception
      */
     public function getRequestUri()
     {
@@ -86,7 +86,7 @@ class Request
                     $this->_requestUri.='?' . $_SERVER['QUERY_STRING'];
                 }
             } else {
-                throw new Exception('SS\Request is unable to determine the request URI.');
+                throw new SS\framework\core\Exception('SS\Request is unable to determine the request URI.');
             }
         }
 

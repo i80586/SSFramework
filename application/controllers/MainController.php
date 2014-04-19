@@ -1,6 +1,8 @@
 <?php
 
-use SS\Application;
+namespace SS\application\controllers;
+
+use SS\framework\core\Application;
 
 /**
  * MainController file
@@ -8,7 +10,7 @@ use SS\Application;
  * @author Rasim Ashurov <rasim.ashurov@gmail.com>
  * @date 25 December 2013
  */
-class MainController extends Controller
+class MainController extends \SS\application\components\Controller
 {
 
     /**

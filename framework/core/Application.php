@@ -1,6 +1,9 @@
 <?php
 
-namespace SS;
+namespace SS\framework\core;
+
+use SS\framework\components\Dumper;
+use \SS\framework\core\Exception;
 
 /**
  * Core class of Application
@@ -48,67 +51,48 @@ class Application
             date_default_timezone_set(self::$_config['app']['timezone']);
         }
         spl_autoload_register('self::loadClasses');
-        set_error_handler('\SS\Exception::catchError', E_ALL);
-        set_exception_handler('\SS\Exception::catchException');
+        set_error_handler('\SS\framework\core\Exception::catchError', E_ALL);
+        set_exception_handler('\SS\framework\core\Exception::catchException');
     }
 
     /**
      * Load classes
      * @param string $class
-     * @return
      */
     private static function loadClasses($class)
     {
-        $className = trim($class, 'SS\\');
+        self::loadClass($class);
+    }
+	
+	/**
+	 * Load class
+	 * @param string $className
+	 */
+	private static function loadClass($className)
+	{
+		$className = ltrim($className, 'SS\\');
+		$classPath = str_replace('\\', '/', $className);
 
         if (isset(self::$classmap[$className])) {
             include self::$classmap[$className];
-            return;
-        }
-
-        foreach (self::$_config['defaultAutoLoadPaths'] as $path) {
-            $requiredFile = $path . DIRECTORY_SEPARATOR . $className . '.php';
-
-            if (false === strpos($path, BASE_PATH)) {
-                $requiredFile = BASE_PATH . $requiredFile;
-            }
-
-            if (is_file($requiredFile)) {
-                include $requiredFile;
-                return;
-            }
-        }
-    }
-
-    /**
-     * Parse route
-     * @return array
-     */
-    private function parseRoute()
-    {
-        if (isset($_GET['r'])) {
-            $route = preg_replace('/[^a-zA-Z\/]/', '', $_GET['r']);
-            return (false === strpos($route, '/')) ? array($route, 'index') : explode('/', $route);
-        }
-
-        return array(self::$_config['app']['defaultController'], 'index');
-    }
+        } elseif (is_file($requiredFile = BASE_PATH . DS . $classPath . '.php')) {
+			include $requiredFile;
+		}
+	}
 
     /**
      * Start web application
-     * @throws RException
+     * @throws SS\framework\core\Exception
      */
     public function start()
     {
-        list($controller, $action) = $this->parseRoute();
+        list($controller, $action) = self::urls()->parse($_GET);
 
-        $controllerClass = ucfirst($controller) . 'Controller';
+        $controllerClass = 'SS\application\controllers\\' . ucfirst($controller) . 'Controller';
         $actionName = 'on' . ucfirst($action);
-
-        if (!is_file(BASE_PATH . '/application/controllers/' . $controllerClass . '.php')) {
-            throw new Exception("Controller <b>:c</b> not found", array(':c' => $controllerClass));
-        }
-
+		
+		self::loadClass($controllerClass);
+		
         try {
             $reflectionMethod = new \ReflectionMethod($controllerClass, $actionName);
         } catch (\ReflectionException $e) {
@@ -117,8 +101,8 @@ class Application
 
         $reflactionClass = $reflectionMethod->getDeclaringClass();
 
-        if (!$reflactionClass->isSubclassOf('\Controller')) {
-            throw new Exception("Controller <b>:c</b> must be a child class of \Controller", array(':c' => $controllerClass));
+        if (!$reflactionClass->isSubclassOf('SS\application\components\Controller')) {
+            throw new Exception("Controller <b>:c</b> must be a child class of SS\application\components\Controller", array(':c' => $controllerClass));
         }
 
         if (!$reflactionClass->hasMethod($actionName)) {
@@ -143,31 +127,22 @@ class Application
 
     /**
      * Magic method for catch static methods
-     * @param type $name
-     * @param type $arguments
-     * @return type
+     * @param string $name
+     * @param array $arguments
+     * @return object
      */
-    public static function __callStatic($name, $arguments)
+    public static function __callStatic($name, array $arguments = [])
     {
-        return Components::getComponent(ucfirst($name), $arguments);
+        return Components::getComponent($name, $arguments);
     }
 
     /**
      * Get base url
-     * @return type
+     * @return string
      */
     public static function getBaseUrl()
     {
         return isset(self::$_config['app']['baseUrl']) ? self::$_config['app']['baseUrl'] : '/';
-    }
-
-    /**
-     * Get resources url
-     * @return string
-     */
-    public static function getStaticUrl()
-    {
-        return isset(self::$_config['app']['staticUrl']) ? self::$_config['app']['staticUrl'] : '/static';
     }
 
     /**

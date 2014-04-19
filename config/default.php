@@ -23,8 +23,6 @@ return [
 	
 	/* don't clear. but you can insert new directory */
 	'defaultAutoLoadPaths' => [
-		FRAMEWORK_DIR . 'core',
-		FRAMEWORK_DIR . 'components',
 		'/application/controllers',
 		'/application/components',
 		'/application/models',

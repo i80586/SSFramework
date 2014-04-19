@@ -1,6 +1,6 @@
 <?php
 
-namespace SS;
+namespace SS\framework\components;
 
 /**
  * Class Database
@@ -32,7 +32,7 @@ class Database
 
     /**
      * Class construction
-     * @throws Exception
+     * @throws SS\framework\core\Exception
      */
     public function __construct()
     {
@@ -40,12 +40,12 @@ class Database
             $dbConfig = isset(Application::getConfig()['db']) ? Application::getConfig()['db'] : null;
 
             if (null === $dbConfig) {
-                throw new Exception('Database connection is not set');
+                throw new SS\framework\core\Exception('Database connection is not set');
             }
 
-            $this->_pdoHandler = new \PDO($dbConfig['dsn'], $dbConfig['username'], $dbConfig['password'], array(
+            $this->_pdoHandler = new \PDO($dbConfig['dsn'], $dbConfig['username'], $dbConfig['password'], [
                 \PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES ' . $dbConfig['encoding']
-            ));
+            ]);
 
             $this->_pdoHandler->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
             $this->_pdoHandler->setAttribute(\PDO::ATTR_EMULATE_PREPARES, false);
@@ -83,12 +83,12 @@ class Database
 
     /**
      * Check for PDO statement
-     * @throws Exception
+     * @throws SS\framework\core\Exception
      */
     private function checkStatement()
     {
         if (false === $this->_pdoStatement) {
-            throw new Exception('Statement is invalid');
+            throw new SS\framework\core\Exception('Statement is invalid');
         } else {
             $this->_pdoStatement->execute();
         }
@@ -100,7 +100,7 @@ class Database
      * @param array $params
      * @param boolean $execute
      */
-    public function setQuery($query, array $params = array(), $execute = true)
+    public function setQuery($query, array $params = [], $execute = true)
     {
         $this->_pdoStatement = $this->_pdoHandler->prepare($query);
 
@@ -168,7 +168,7 @@ class Database
     public function __call($name, $arguments)
     {
         if (false !== $this->_pdoStatement) {
-            return call_user_func_array(array($this->_pdoStatement, $name), $arguments);
+            return call_user_func_array([$this->_pdoStatement, $name], $arguments);
         }
     }
 

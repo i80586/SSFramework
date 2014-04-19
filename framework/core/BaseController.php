@@ -1,6 +1,8 @@
 <?php
 
-namespace SS;
+namespace SS\framework\core;
+
+use SS\framework\core\Application;
 
 /**
  * Abstract class of controller
@@ -28,24 +30,43 @@ abstract class BaseController
      * @param string $view
      * @param array $data
      */
-    protected function render($view, $data = array())
+    protected function render($view, array $data = [])
     {
-        $layoutFile = BASE_PATH . '/application/views/' . $this->layout . '.php';
         $content = $this->processView($view, $data);
 
-        if (is_file($layoutFile)) {
+        if (is_file($layoutFile = $this->getLayoutFile())) {
             include $layoutFile;
         } else {
             echo $content;
         }
     }
+	
+	/**
+	 * Get layout file path
+	 * @return string
+	 */
+	protected function getLayoutFile()
+	{
+		return BASE_PATH . '/application/views/' . $this->layout . '.php';
+	}
+	
+	/**
+	 * Get controller name
+	 * @param string $controller
+	 * @return string
+	 */
+	protected function getControllerName($controller)
+	{
+		preg_match('/^.*\\\\([a-z]+)Controller/i', $controller, $match);
+		return isset($match[1]) ? lcfirst($match[1]) : '';
+	}
 
-    /**
+	/**
      * Render view file without layout
      * @param string $view
      * @param array $data
      */
-    protected function renderPartial($view, $data = array())
+    protected function renderPartial($view, array $data = [])
     {
         echo $this->processView($view, $data);
     }
@@ -55,11 +76,11 @@ abstract class BaseController
      * @param string $view
      * @param array $data
      * @return string
-     * @throws RException
+     * @throws SS\framework\core\Exception
      */
-    private function processView($view, $data = array())
+    protected function processView($view, array $data = [])
     {
-        $controllerName = lcfirst(str_replace('Controller', '', get_class($this)));
+        $controllerName = lcfirst(str_replace('Controller', '', $this->getControllerName(get_class($this))));
         $viewFile = BASE_PATH . '/application/views/' . $controllerName . '/' . $view . '.php';
 
         if (is_file($viewFile)) {
@@ -69,7 +90,7 @@ abstract class BaseController
             include $viewFile;
             return ob_get_clean();
         } else {
-            throw new Exception("View <b>:v</b> not found at <i>%f</i>", array(':v' => $view, ':f' => $viewFile));
+            throw new \SS\framework\core\Exception("View <b>:v</b> not found at <i>:f</i>", [':v' => $view, ':f' => $viewFile]);
         }
     }
 
@@ -79,7 +100,7 @@ abstract class BaseController
      * @param array $params
      * @param integer $redirectCode
      */
-    protected function redirect($route, array $params = array(), $redirectCode = 301)
+    protected function redirect($route, array $params = [], $redirectCode = 301)
     {
         if (('/' == substr($route, 0, 1)) || (false !== strpos('http://', $route)) || (false !== strpos('https://', $route))) {
             $redirectUrl = $route;
@@ -110,6 +131,17 @@ abstract class BaseController
     public function setPageTitle($pageTitle)
     {
         $this->pageTitle = $pageTitle;
+    }
+	
+	/**
+     * Get resources url
+     * @return string
+     */
+    public static function getMediaUrl()
+    {
+        return (isset(Application::$_config['app']['staticUrl'])) ?
+						Application::$_config['app']['staticUrl'] :
+						'/media';
     }
 
 }

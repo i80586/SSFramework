@@ -1,6 +1,6 @@
 <?php
 
-namespace SS;
+namespace SS\framework\core;
 
 /**
  * Components class
@@ -13,15 +13,15 @@ class Components
 {
 
     /**
-     * @var type
+     * @var array
      */
-    protected static $_componentsList = array();
+    protected static $_componentsList = [];
 
     /**
      * Components list
      * @var array
      */
-    protected static $_components = array();
+    protected static $_components = [];
 
     /**
      * Get component. If not exists, create it
@@ -30,9 +30,7 @@ class Components
      */
     public static function getComponent($name, $arguments)
     {
-        $className = 'SS\\' . $name;
-
-        if (!isset(self::$_componentsList[$className])) {
+        if (!isset(self::$_componentsList[$className = 'SS\framework\components\\' . ucfirst($name)])) {
             self::registerComponent($className, $arguments);
             self::createComponent($className);
         }
@@ -47,9 +45,9 @@ class Components
     protected static function createComponent($name)
     {
         if (!isset(self::$_components[$name])) {
-            throw new Exception('Undefined component: ' . $name);
+            throw new \SS\framework\core\Exception('Undefined component: ' . $name);
         }
-
+		
         $reflectionClass = new \ReflectionClass($name);
         self::$_componentsList[$name] = empty(self::$_components[$name]) ?
                 $reflectionClass->newInstance() :
@@ -61,7 +59,7 @@ class Components
      * @param string $name
      * @param array $params
      */
-    protected static function registerComponent($name, array $params = array())
+    protected static function registerComponent($name, array $params = [])
     {
         self::$_components[$name] = $params;
     }

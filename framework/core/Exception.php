@@ -1,6 +1,6 @@
 <?php
 
-namespace SS;
+namespace SS\framework\core;
 
 /**
  * Exception class file
@@ -20,10 +20,10 @@ class Exception
     /**
      * Class construction
      * Generate message
-     * @param type $message
+     * @param string $message
      * @param array $params
      */
-    public function __construct($message, array $params = array())
+    public function __construct($message, array $params = [])
     {
         self::catchException(str_replace(array_keys($params), array_values($params), $message));
     }
@@ -36,7 +36,7 @@ class Exception
      * @param integer $errline
      * @param array $errcontext
      */
-    public static function catchError($errno, $errstr, $errfile = '', $errline = 0, $errcontext = array())
+    public static function catchError($errno, $errstr, $errfile = '', $errline = 0, array $errcontext = [])
     {
         self::trace(self::ERR_PHPERROR, $errstr, $errfile, $errline);
     }
