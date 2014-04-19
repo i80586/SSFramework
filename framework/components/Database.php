@@ -2,6 +2,8 @@
 
 namespace SS\framework\components;
 
+use Exception;
+
 /**
  * Class Database
  * Simple wrapper for PDO
@@ -40,19 +42,27 @@ class Database
             $dbConfig = isset(Application::getConfig()['db']) ? Application::getConfig()['db'] : null;
 
             if (null === $dbConfig) {
-                throw new SS\framework\core\Exception('Database connection is not set');
+                throw new Exception('Database connection is not set');
             }
 
-            $this->_pdoHandler = new \PDO($dbConfig['dsn'], $dbConfig['username'], $dbConfig['password'], [
-                \PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES ' . $dbConfig['encoding']
-            ]);
-
-            $this->_pdoHandler->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-            $this->_pdoHandler->setAttribute(\PDO::ATTR_EMULATE_PREPARES, false);
+            $this->connect($dbConfig);
         }
     }
+	
+	/**
+	 * Connect to database
+	 * @param array $config
+	 */
+	protected function connect(array $config)
+	{
+		$this->_pdoHandler = new \PDO($config['dsn'], $config['username'], $config['password'], [
+			\PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES ' . $config['encoding']
+		]);
+		$this->_pdoHandler->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+        $this->_pdoHandler->setAttribute(\PDO::ATTR_EMULATE_PREPARES, false);
+	}
 
-    /**
+	/**
      * Quote value
      * @param mixed $value
      * @return mixed
@@ -88,7 +98,7 @@ class Database
     private function checkStatement()
     {
         if (false === $this->_pdoStatement) {
-            throw new SS\framework\core\Exception('Statement is invalid');
+            throw new Exception('Statement is invalid');
         } else {
             $this->_pdoStatement->execute();
         }
