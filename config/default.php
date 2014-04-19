@@ -20,11 +20,4 @@ return [
 		'encoding' => 'utf8'
 	],
 	 * */
-	
-	/* don't clear. but you can insert new directory */
-	'defaultAutoLoadPaths' => [
-		'/application/controllers',
-		'/application/components',
-		'/application/models',
-	]
 ];
