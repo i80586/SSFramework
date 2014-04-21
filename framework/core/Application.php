@@ -13,56 +13,56 @@ use \SS\framework\core\Exception;
 class Application
 {
 
-    /**
-     * Class paths to autoloading
-     * @var array 
-     */
-    public static $classmap = [];
+	/**
+	 * Class paths to autoloading
+	 * @var array 
+	 */
+	public static $classmap = [];
 
-    /**
-     * Application config
-     * @var array 
-     */
-    private static $_config;
+	/**
+	 * Application config
+	 * @var array 
+	 */
+	private static $_config;
 
-    /**
-     * Database handler
-     * @var SS\Database 
-     */
-    private static $_dbHandler = null;
+	/**
+	 * Database handler
+	 * @var SS\Database 
+	 */
+	private static $_dbHandler = null;
 
-    /**
-     * Class construction
-     * @param array $config
-     */
-    public function __construct($config)
-    {
-        self::$_config = $config;
-        $this->init();
-    }
+	/**
+	 * Class construction
+	 * @param array $config
+	 */
+	public function __construct($config)
+	{
+		self::$_config = $config;
+		$this->init();
+	}
 
-    /**
-     * Initialize function
-     */
-    protected function init()
-    {
-        if (isset(self::$_config['app']['timezone'])) {
-            date_default_timezone_set(self::$_config['app']['timezone']);
-        }
-        spl_autoload_register('self::loadClasses');
-        set_error_handler('\SS\framework\core\Exception::catchError', E_ALL);
-        set_exception_handler('\SS\framework\core\Exception::catchException');
-    }
+	/**
+	 * Initialize function
+	 */
+	protected function init()
+	{
+		if (isset(self::$_config['app']['timezone'])) {
+			date_default_timezone_set(self::$_config['app']['timezone']);
+		}
+		spl_autoload_register('self::loadClasses');
+		set_error_handler('\SS\framework\core\Exception::catchError', E_ALL);
+		set_exception_handler('\SS\framework\core\Exception::catchException');
+	}
 
-    /**
-     * Load classes
-     * @param string $class
-     */
-    private static function loadClasses($class)
-    {
-        self::loadClass($class);
-    }
-	
+	/**
+	 * Load classes
+	 * @param string $class
+	 */
+	private static function loadClasses($class)
+	{
+		self::loadClass($class);
+	}
+
 	/**
 	 * Load class
 	 * @param string $className
@@ -72,125 +72,125 @@ class Application
 		$className = ltrim($className, 'SS\\');
 		$classPath = str_replace('\\', '/', $className);
 
-        if (isset(self::$classmap[$className])) {
-            include self::$classmap[$className];
-        } elseif (is_file($requiredFile = BASE_PATH . DS . $classPath . '.php')) {
+		if (isset(self::$classmap[$className])) {
+			include self::$classmap[$className];
+		} elseif (is_file($requiredFile = BASE_PATH . DS . $classPath . '.php')) {
 			include $requiredFile;
 		}
 	}
 
-    /**
-     * Start web application
-     * @throws SS\framework\core\Exception
-     */
-    public function start()
-    {
-        list($controller, $action) = self::urls()->parse($_GET);
+	/**
+	 * Start web application
+	 * @throws SS\framework\core\Exception
+	 */
+	public function start()
+	{
+		list($controller, $action) = self::urls()->parse($_GET);
 
-        $controllerClass = 'SS\application\controllers\\' . ucfirst($controller) . 'Controller';
-        $actionName = 'on' . ucfirst($action);
-		
+		$controllerClass = 'SS\application\controllers\\' . ucfirst($controller) . 'Controller';
+		$actionName = 'on' . ucfirst($action);
+
 		self::loadClass($controllerClass);
-		
-        try {
-            $reflectionMethod = new \ReflectionMethod($controllerClass, $actionName);
-        } catch (\ReflectionException $e) {
-            throw new Exception('Action <b>:a</b> not found in <b>:c</b>.', array(':a' => $action, ':c' => $controllerClass));
-        }
 
-        $reflactionClass = $reflectionMethod->getDeclaringClass();
+		try {
+			$reflectionMethod = new \ReflectionMethod($controllerClass, $actionName);
+		} catch (\ReflectionException $e) {
+			throw new Exception('Action <b>:a</b> not found in <b>:c</b>.', array(':a' => $action, ':c' => $controllerClass));
+		}
 
-        if (!$reflactionClass->isSubclassOf('SS\application\components\Controller')) {
-            throw new Exception("Controller <b>:c</b> must be a child class of SS\application\components\Controller", array(':c' => $controllerClass));
-        }
+		$reflactionClass = $reflectionMethod->getDeclaringClass();
 
-        if (!$reflactionClass->hasMethod($actionName)) {
-            throw new Exception("Action <b>:a</b> not found in <b>%c</b>", array(':a' => $action, ':c' => $controllerClass));
-        }
+		if (!$reflactionClass->isSubclassOf('SS\application\components\Controller')) {
+			throw new Exception("Controller <b>:c</b> must be a child class of SS\application\components\Controller", array(':c' => $controllerClass));
+		}
 
-        $reflectionMethod->invoke($reflactionClass->newInstance());
-    }
+		if (!$reflactionClass->hasMethod($actionName)) {
+			throw new Exception("Action <b>:a</b> not found in <b>%c</b>", array(':a' => $action, ':c' => $controllerClass));
+		}
 
-    /**
-     * Returns database handler
-     * @return SS\Database
-     */
-    public static function db()
-    {
-        if (null === self::$_dbHandler) {
-            self::$_dbHandler = new Database();
-        }
+		$reflectionMethod->invoke($reflactionClass->newInstance());
+	}
 
-        return self::$_dbHandler;
-    }
+	/**
+	 * Returns database handler
+	 * @return SS\Database
+	 */
+	public static function db()
+	{
+		if (null === self::$_dbHandler) {
+			self::$_dbHandler = new Database();
+		}
 
-    /**
-     * Magic method for catch static methods
-     * @param string $name
-     * @param array $arguments
-     * @return object
-     */
-    public static function __callStatic($name, array $arguments = [])
-    {
-        return Components::getComponent($name, $arguments);
-    }
+		return self::$_dbHandler;
+	}
 
-    /**
-     * Get base url
-     * @return string
-     */
-    public static function getBaseUrl()
-    {
-        return isset(self::$_config['app']['baseUrl']) ? self::$_config['app']['baseUrl'] : '/';
-    }
+	/**
+	 * Magic method for catch static methods
+	 * @param string $name
+	 * @param array $arguments
+	 * @return object
+	 */
+	public static function __callStatic($name, array $arguments = [])
+	{
+		return Components::getComponent($name, $arguments);
+	}
 
-    /**
-     * Get current configuration
-     * @return array
-     */
-    public static function getConfig()
-    {
-        return self::$_config;
-    }
+	/**
+	 * Get base url
+	 * @return string
+	 */
+	public static function getBaseUrl()
+	{
+		return isset(self::$_config['app']['baseUrl']) ? self::$_config['app']['baseUrl'] : '/';
+	}
 
-    /**
-     * Structured data dumper
-     * @param mixed $data
-     * @param boolean $terminate
-     */
-    public static function dump($data, $terminate = true)
-    {
-        \SS\framework\components\Dumper::dump($data);
+	/**
+	 * Get current configuration
+	 * @return array
+	 */
+	public static function getConfig()
+	{
+		return self::$_config;
+	}
 
-        if ($terminate) {
-            self::stop();
-        }
-    }
+	/**
+	 * Structured data dumper
+	 * @param mixed $data
+	 * @param boolean $terminate
+	 */
+	public static function dump($data, $terminate = true)
+	{
+		\SS\framework\components\Dumper::dump($data);
 
-    /**
-     * Get application name
-     * @return string
-     */
-    public static function getAppName()
-    {
-        return 'SSFramework ' . self::getVersion();
-    }
+		if ($terminate) {
+			self::stop();
+		}
+	}
 
-    /**
-     * Get version of the framework
-     * @return string
-     */
-    public static function getVersion()
-    {
-        return '0.1';
-    }
+	/**
+	 * Get application name
+	 * @return string
+	 */
+	public static function getAppName()
+	{
+		return 'SSFramework ' . self::getVersion();
+	}
 
-    /**
-     * Stop application
-     */
-    public static function stop()
-    {
-        exit;
-    }
+	/**
+	 * Get version of the framework
+	 * @return string
+	 */
+	public static function getVersion()
+	{
+		return '0.1';
+	}
+
+	/**
+	 * Stop application
+	 */
+	public static function stop()
+	{
+		exit;
+	}
 
 }
