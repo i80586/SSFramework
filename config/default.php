@@ -8,7 +8,6 @@ return [
 		'baseUrl' => '/',
 		'staticUrl' => '/static',
 		'defaultController' => 'main',
-		'timezone' => 'Asia/Baku'
 	],
 	
 	/**

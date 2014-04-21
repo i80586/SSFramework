@@ -35,10 +35,9 @@ class Application
 	 * Class construction
 	 * @param array $config
 	 */
-	public function __construct($config)
+	public function __construct(array $config)
 	{
 		self::$_config = $config;
-		$this->init();
 	}
 
 	/**
@@ -46,12 +45,34 @@ class Application
 	 */
 	protected function init()
 	{
-		if (isset(self::$_config['app']['timezone'])) {
-			date_default_timezone_set(self::$_config['app']['timezone']);
-		}
 		spl_autoload_register('self::loadClasses');
 		set_error_handler('\SS\framework\core\Exception::catchError', E_ALL);
 		set_exception_handler('\SS\framework\core\Exception::catchException');
+		
+		list($controller, $action) = self::urls()->parse($_GET);
+
+		$controllerClass = 'SS\application\controllers\\' . ucfirst($controller) . 'Controller';
+		$actionName = 'on' . ucfirst($action);
+
+		self::loadClass($controllerClass);
+
+		try {
+			$reflectionMethod = new \ReflectionMethod($controllerClass, $actionName);
+		} catch (\ReflectionException $e) {
+			throw new Exception('Action <b>:a</b> not found in <b>:c</b>.', array(':a' => $action, ':c' => $controllerClass));
+		}
+
+		$reflactionClass = $reflectionMethod->getDeclaringClass();
+
+		if (!$reflactionClass->isSubclassOf('SS\application\components\Controller')) {
+			throw new Exception("Controller <b>:c</b> must be a child class of SS\application\components\Controller", array(':c' => $controllerClass));
+		}
+
+		if (!$reflactionClass->hasMethod($actionName)) {
+			throw new Exception("Action <b>:a</b> not found in <b>%c</b>", array(':a' => $action, ':c' => $controllerClass));
+		}
+
+		$reflectionMethod->invoke($reflactionClass->newInstance());
 	}
 
 	/**
@@ -85,30 +106,7 @@ class Application
 	 */
 	public function start()
 	{
-		list($controller, $action) = self::urls()->parse($_GET);
-
-		$controllerClass = 'SS\application\controllers\\' . ucfirst($controller) . 'Controller';
-		$actionName = 'on' . ucfirst($action);
-
-		self::loadClass($controllerClass);
-
-		try {
-			$reflectionMethod = new \ReflectionMethod($controllerClass, $actionName);
-		} catch (\ReflectionException $e) {
-			throw new Exception('Action <b>:a</b> not found in <b>:c</b>.', array(':a' => $action, ':c' => $controllerClass));
-		}
-
-		$reflactionClass = $reflectionMethod->getDeclaringClass();
-
-		if (!$reflactionClass->isSubclassOf('SS\application\components\Controller')) {
-			throw new Exception("Controller <b>:c</b> must be a child class of SS\application\components\Controller", array(':c' => $controllerClass));
-		}
-
-		if (!$reflactionClass->hasMethod($actionName)) {
-			throw new Exception("Action <b>:a</b> not found in <b>%c</b>", array(':a' => $action, ':c' => $controllerClass));
-		}
-
-		$reflectionMethod->invoke($reflactionClass->newInstance());
+		$this->init();
 	}
 
 	/**
