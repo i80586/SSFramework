@@ -1,8 +1,8 @@
 <?php
 
-namespace SS\framework\core;
+namespace framework\core;
 
-use \SS\framework\core\Exception;
+use \framework\core\Exception;
 
 /**
  * Core class of Application
@@ -14,12 +14,6 @@ class Application
 {
 
 	/**
-	 * Class paths to autoloading
-	 * @var array 
-	 */
-	public static $classmap = [];
-
-	/**
 	 * Application config
 	 * @var array 
 	 */
@@ -27,7 +21,7 @@ class Application
 
 	/**
 	 * Database handler
-	 * @var SS\Database 
+	 * @var \framework\core\Database 
 	 */
 	private static $_dbHandler = null;
 
@@ -49,48 +43,32 @@ class Application
 		if (isset(self::$_config['app']['timezone'])) {
 			date_default_timezone_set(self::$_config['app']['timezone']);
 		}
-		spl_autoload_register('self::loadClasses');
-		set_error_handler('\SS\framework\core\Exception::catchError', E_ALL);
-		set_exception_handler('\SS\framework\core\Exception::catchException');
+		// register namespaces and autoloader
+		$this->registerNamespaces();
+		set_error_handler('\framework\core\Exception::catchError', E_ALL);
+		set_exception_handler('\framework\core\Exception::catchException');
 	}
 
 	/**
-	 * Load classes
-	 * @param string $class
+	 * Register namespaces and autoloader
 	 */
-	private static function loadClasses($class)
+	private function registerNamespaces()
 	{
-		self::loadClass($class);
-	}
-
-	/**
-	 * Load class
-	 * @param string $className
-	 */
-	private static function loadClass($className)
-	{
-		$className = ltrim($className, 'SS\\');
-		$classPath = str_replace('\\', '/', $className);
-
-		if (isset(self::$classmap[$className])) {
-			include self::$classmap[$className];
-		} elseif (is_file($requiredFile = BASE_PATH . DS . $classPath . '.php')) {
-			include $requiredFile;
-		}
+		require FRAMEWORK_DIR . 'core/SplClassLoader.php';
+		(new \SplClassLoader('framework', BASE_PATH))->register();
+		(new \SplClassLoader('application', BASE_PATH))->register();
 	}
 
 	/**
 	 * Start web application
-	 * @throws SS\framework\core\Exception
+	 * @throws \framework\core\Exception
 	 */
 	public function start()
 	{
 		list($controller, $action) = self::urls()->parse($_GET);
 
-		$controllerClass = 'SS\application\controllers\\' . ucfirst($controller) . 'Controller';
+		$controllerClass = 'application\controllers\\' . ucfirst($controller) . 'Controller';
 		$actionName = 'on' . ucfirst($action);
-
-		self::loadClass($controllerClass);
 
 		try {
 			$reflectionMethod = new \ReflectionMethod($controllerClass, $actionName);
@@ -100,8 +78,8 @@ class Application
 
 		$reflactionClass = $reflectionMethod->getDeclaringClass();
 
-		if (!$reflactionClass->isSubclassOf('SS\application\components\Controller')) {
-			throw new Exception("Controller <b>:c</b> must be a child class of SS\application\components\Controller", array(':c' => $controllerClass));
+		if (!$reflactionClass->isSubclassOf('application\components\Controller')) {
+			throw new Exception("Controller <b>:c</b> must be a child class of application\components\Controller", array(':c' => $controllerClass));
 		}
 
 		if (!$reflactionClass->hasMethod($actionName)) {
@@ -113,7 +91,7 @@ class Application
 
 	/**
 	 * Returns database handler
-	 * @return SS\Database
+	 * @return framework\core\Database
 	 */
 	public static function db()
 	{
@@ -160,7 +138,7 @@ class Application
 	 */
 	public static function dump($data, $terminate = true)
 	{
-		\SS\framework\components\Dumper::dump($data);
+		\framework\components\Dumper::dump($data);
 
 		if ($terminate) {
 			self::stop();
@@ -182,7 +160,7 @@ class Application
 	 */
 	public static function getVersion()
 	{
-		return '0.1';
+		return '0.2';
 	}
 
 	/**
