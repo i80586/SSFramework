@@ -1,6 +1,6 @@
 <?php
 
-namespace SS\framework\components;
+namespace framework\components;
 
 use Exception;
 
@@ -34,7 +34,7 @@ class Database
 
     /**
      * Class construction
-     * @throws SS\framework\core\Exception
+     * @throws \framework\core\Exception
      */
     public function __construct()
     {
@@ -93,7 +93,7 @@ class Database
 
     /**
      * Check for PDO statement
-     * @throws SS\framework\core\Exception
+     * @throws \framework\core\Exception
      */
     private function checkStatement()
     {

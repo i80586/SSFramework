@@ -1,6 +1,6 @@
 <?php
 
-namespace SS\framework\core;
+namespace framework\core;
 
 /**
  * Class Model
@@ -46,12 +46,12 @@ abstract class Model
     /**
      * Check for existing attribute
      * @param string $name
-     * @throws SS\framework\core\Exception
+     * @throws \framework\core\Exception
      */
     private function attributeExists($name)
     {
         if (!isset($this->attributes[$name])) {
-            throw new SS\framework\core\Exception('Attribute <b>:a</b> not found in <b>:m</b> model', 
+            throw new \framework\core\Exception('Attribute <b>:a</b> not found in <b>:m</b> model', 
                     [':a' => $name, ':m' => get_class($this)]);
         }
         return true;

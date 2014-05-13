@@ -1,6 +1,6 @@
 <?php
 
-namespace SS\framework\core;
+namespace framework\core;
 
 /**
  * Exception class file
@@ -59,7 +59,7 @@ class Exception
      */
     protected static function trace($errorType, $message, $errorFile = null, $errorLine = null)
     {
-        $header = $errorType === self::ERR_EXCEPTION ? 'SS\Exception' : 'PHP Error';
+        $header = $errorType === self::ERR_EXCEPTION ? 'framework\core\Exception' : 'PHP Error';
         include FRAMEWORK_DIR . 'views/error.php';
         Application::stop();
     }

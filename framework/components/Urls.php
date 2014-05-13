@@ -1,8 +1,8 @@
 <?php
 
-namespace SS\framework\components;
+namespace framework\components;
 
-use \SS\framework\core\Application;
+use \framework\core\Application;
 
 /**
  * Urls class

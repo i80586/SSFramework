@@ -1,9 +1,9 @@
 <?php
 
-namespace SS\framework\components;
+namespace framework\components;
 
 /**
- * SS\Dumper class file
+ * framework\components\Dumper class file
  * Dump data as string
  * 
  * @author Rasim Ashurov <rasim.ashurov@gmail.com>

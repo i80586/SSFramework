@@ -1,6 +1,6 @@
 <?php
 
-namespace SS\framework\core;
+namespace framework\core;
 
 /**
  * Components class
@@ -30,7 +30,7 @@ class Components
      */
     public static function getComponent($name, $arguments)
     {
-        if (!isset(self::$_componentsList[$className = 'SS\framework\components\\' . ucfirst($name)])) {
+        if (!isset(self::$_componentsList[$className = '\framework\components\\' . ucfirst($name)])) {
             self::registerComponent($className, $arguments);
             self::createComponent($className);
         }
@@ -45,7 +45,7 @@ class Components
     protected static function createComponent($name)
     {
         if (!isset(self::$_components[$name])) {
-            throw new \SS\framework\core\Exception('Undefined component: ' . $name);
+            throw new \framework\core\Exception('Undefined component: ' . $name);
         }
 		
         $reflectionClass = new \ReflectionClass($name);

@@ -1,6 +1,6 @@
 <?php
 
-namespace SS\framework\components;
+namespace framework\components;
 
 /**
  * Request class
@@ -62,7 +62,7 @@ class Request
     /**
      * Get request url
      * @return string
-     * @throws SS\framework\core\Exception
+     * @throws \framework\core\Exception
      */
     public function getRequestUri()
     {
@@ -86,7 +86,7 @@ class Request
                     $this->_requestUri.='?' . $_SERVER['QUERY_STRING'];
                 }
             } else {
-                throw new SS\framework\core\Exception('SS\Request is unable to determine the request URI.');
+                throw new \framework\core\Exception('framwork\components\Request is unable to determine the request URI.');
             }
         }
 
