@@ -17,7 +17,7 @@ class MainController extends \application\components\Controller
     public function onIndex()
     {
         $this->renderPartial('welcome', [
-			'content' => \application\models\Post::model()->getContent()
+			'content' => \application\models\Example::model()->getContent()
 		]);
     }
 

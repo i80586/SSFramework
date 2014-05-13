@@ -5,7 +5,7 @@ namespace application\models;
 /**
  * Test model
  */
-class Post extends \framework\core\Model
+class Example extends \framework\core\Model
 {
 	/**
 	 * Get example content
