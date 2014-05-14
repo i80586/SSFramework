@@ -1,16 +1,14 @@
 <?php
 
-namespace SS\application\components;
-
-use SS\framework\core\BaseController;
+namespace application\components;
 
 /**
- * Base controller
+ * Example controller
  * 
  * @author Rasim Ashurov <rasim.ashurov@gmail.com>
  * @date 1 January 2013
  */
-class Controller extends BaseController
+class Controller extends \framework\core\BaseController
 {
 
     /**

@@ -1,8 +1,8 @@
 <?php
 
-namespace SS\framework\core;
+namespace framework\core;
 
-use SS\framework\core\Application;
+use \framework\core\Application;
 
 /**
  * Abstract class of controller
@@ -76,7 +76,7 @@ abstract class BaseController
      * @param string $view
      * @param array $data
      * @return string
-     * @throws SS\framework\core\Exception
+     * @throws \framework\core\Exception
      */
     protected function processView($view, array $data = [])
     {
@@ -90,7 +90,7 @@ abstract class BaseController
             include $viewFile;
             return ob_get_clean();
         } else {
-            throw new \SS\framework\core\Exception("View <b>:v</b> not found at <i>:f</i>", [':v' => $view, ':f' => $viewFile]);
+            throw new \framework\core\Exception("View <b>:v</b> not found at <i>:f</i>", [':v' => $view, ':f' => $viewFile]);
         }
     }
 
