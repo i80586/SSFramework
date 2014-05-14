@@ -24,11 +24,13 @@ class Components
     protected static $_components = [];
 
     /**
-     * Get component. If not exists, create it
+     * Get component. Create new if not exists
+	 * 
      * @param string $name
+	 * @param array $arguments
      * @return object
      */
-    public static function getComponent($name, $arguments)
+    public static function getComponent($name, array $arguments)
     {
         if (!isset(self::$_componentsList[$className = '\framework\components\\' . ucfirst($name)])) {
             self::registerComponent($className, $arguments);

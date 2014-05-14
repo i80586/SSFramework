@@ -64,6 +64,8 @@ class Application
 	 */
 	public function start()
 	{
+		$this->init();
+		
 		list($controller, $action) = self::urls()->parse($_GET);
 
 		$controllerClass = 'application\controllers\\' . ucfirst($controller) . 'Controller';
