@@ -10,7 +10,7 @@ use \framework\core\Application;
  * @author Rasim Ashurov <rasim.ashurov@gmail.com>
  * @date 19 April 2014
  */
-class Urls
+class Urls extends \framework\core\BaseComponent
 {
 
     /**

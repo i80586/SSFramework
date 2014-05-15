@@ -9,7 +9,7 @@ namespace framework\components;
  * @author Rasim Ashurov <rasim.ashurov@gmail.com>
  * @date 7 January 2013
  */
-class Dumper
+class Dumper extends \framework\core\BaseComponent
 {
 
     /**

@@ -12,7 +12,7 @@ use framework\core\Application;
  * @author Rasim Ashurov <rasim.ashurov@gmail.com>
  * @date 2 January 2013
  */
-class Database
+class Database extends \framework\core\BaseComponent
 {
 
     /**
