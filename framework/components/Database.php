@@ -163,7 +163,7 @@ class Database
 		}
 		$queryString .= ' INTO :table (:columns) VALUES (:values)';
 
-        $query = $this->applyParams("INSERT INTO :table (:columns) VALUES (:values)", [
+        $query = $this->applyParams($queryString, [
             ':table' => '`' . $tableName . '`',
             ':columns' => $fields,
             ':values' => $values
