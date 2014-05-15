@@ -1,6 +1,6 @@
 <?php
 
-namespace application\components;
+namespace app\components;
 
 /**
  * Example controller

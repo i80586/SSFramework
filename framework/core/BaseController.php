@@ -47,7 +47,7 @@ abstract class BaseController
 	 */
 	protected function getLayoutFile()
 	{
-		return BASE_PATH . '/application/views/' . $this->layout . '.php';
+		return BASE_PATH . '/app/views/' . $this->layout . '.php';
 	}
 	
 	/**
@@ -81,7 +81,7 @@ abstract class BaseController
     protected function processView($view, array $data = [])
     {
         $controllerName = lcfirst(str_replace('Controller', '', $this->getControllerName(get_class($this))));
-        $viewFile = BASE_PATH . '/application/views/' . $controllerName . '/' . $view . '.php';
+        $viewFile = BASE_PATH . '/app/views/' . $controllerName . '/' . $view . '.php';
 
         if (is_file($viewFile)) {
             extract($data);

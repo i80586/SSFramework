@@ -2,7 +2,8 @@
 
 namespace framework\components;
 
-use Exception;
+use framework\core\Exception;
+use framework\core\Application;
 
 /**
  * Class Database
@@ -105,10 +106,11 @@ class Database
     }
 
     /**
-     * Run query
+     * Set query and execute
      * @param string $query
      * @param array $params
      * @param boolean $execute
+	 * @return Database;
      */
     public function setQuery($query, array $params = [], $execute = true)
     {
@@ -146,14 +148,20 @@ class Database
      * Insert new row into table
      * @param string $tableName
      * @param array $columns
-     * @return mixed
+     * @return boolean|integer
      */
-    public function insert($tableName, array $columns)
+    public function insert($tableName, array $columns, $ignore = false)
     {
         $fields = '`' . implode('`,`', array_keys($columns)) . '`';
         $values = implode(',', array_map(function($value) {
                     return $this->quoteValue($value);
                 }, array_values($columns)));
+
+		$queryString = 'INSERT';
+		if ($ignore) {
+			$queryString .= ' IGNORE';
+		}
+		$queryString .= ' INTO :table (:columns) VALUES (:values)';
 
         $query = $this->applyParams("INSERT INTO :table (:columns) VALUES (:values)", [
             ':table' => '`' . $tableName . '`',
@@ -162,20 +170,21 @@ class Database
         ]);
 
         $this->_pdoStatement = $this->_pdoHandler->prepare($query);
-
+		
         if (false === $this->_pdoStatement->execute()) {
             return false;
         }
-
+		
         return $this->_pdoStatement->rowCount();
     }
 
     /**
-     * Catch called method
+     * Catch called method. Call method from PDO statement
      * @param string $name
      * @param array $arguments
+	 * @return void|mixed
      */
-    public function __call($name, $arguments)
+    public function __call($name, array $arguments = [])
     {
         if (false !== $this->_pdoStatement) {
             return call_user_func_array([$this->_pdoStatement, $name], $arguments);

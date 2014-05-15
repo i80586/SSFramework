@@ -55,7 +55,7 @@ class Application
 	{
 		require FRAMEWORK_DIR . 'core/SplClassLoader.php';
 		(new \SplClassLoader('framework', BASE_PATH))->register();
-		(new \SplClassLoader('application', BASE_PATH))->register();
+		(new \SplClassLoader('app', BASE_PATH))->register();
 	}
 
 	/**
@@ -68,7 +68,7 @@ class Application
 		
 		list($controller, $action) = self::urls()->parse($_GET);
 
-		$controllerClass = 'application\controllers\\' . ucfirst($controller) . 'Controller';
+		$controllerClass = 'app\controllers\\' . ucfirst($controller) . 'Controller';
 		$actionName = 'on' . ucfirst($action);
 
 		try {
@@ -79,8 +79,8 @@ class Application
 
 		$reflactionClass = $reflectionMethod->getDeclaringClass();
 
-		if (!$reflactionClass->isSubclassOf('application\components\Controller')) {
-			throw new Exception("Controller <b>:c</b> must be a child class of application\components\Controller", array(':c' => $controllerClass));
+		if (!$reflactionClass->isSubclassOf('app\components\Controller')) {
+			throw new Exception("Controller <b>:c</b> must be a child class of app\components\Controller", array(':c' => $controllerClass));
 		}
 
 		if (!$reflactionClass->hasMethod($actionName)) {
@@ -97,9 +97,8 @@ class Application
 	public static function db()
 	{
 		if (null === self::$_dbHandler) {
-			self::$_dbHandler = new Database();
+			self::$_dbHandler = new \framework\components\Database();
 		}
-
 		return self::$_dbHandler;
 	}
 

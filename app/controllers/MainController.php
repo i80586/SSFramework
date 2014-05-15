@@ -1,6 +1,6 @@
 <?php
 
-namespace application\controllers;
+namespace app\controllers;
 
 /**
  * MainController file
@@ -8,7 +8,7 @@ namespace application\controllers;
  * @author Rasim Ashurov <rasim.ashurov@gmail.com>
  * @date 25 December 2013
  */
-class MainController extends \application\components\Controller
+class MainController extends \app\components\Controller
 {
 
     /**
@@ -17,7 +17,7 @@ class MainController extends \application\components\Controller
     public function onIndex()
     {
         $this->renderPartial('welcome', [
-			'content' => \application\models\Example::model()->getContent()
+			'content' => \app\models\Example::model()->getContent()
 		]);
     }
 

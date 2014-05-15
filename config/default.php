@@ -10,13 +10,13 @@ return [
 		'defaultController' => 'main',
 	],
 	
-	/**
-	 * Clear comments if you'll use database
+	 /* Clear comments if you'll use database
 	'db' => [
-		'dsn' => 'mysql:host=localhost;dbname=test;',
+		'dsn' => 'mysql:host=localhost;dbname=mestero;',
 		'username' => 'root',
 		'password' => '',
 		'encoding' => 'utf8'
 	],
-	 * */
+	*/
+	
 ];
