@@ -35,6 +35,7 @@ class Database extends \framework\core\BaseComponent
 
     /**
      * Class construction
+	 * 
      * @throws \framework\core\Exception
      */
     public function __construct()
@@ -52,6 +53,7 @@ class Database extends \framework\core\BaseComponent
 	
 	/**
 	 * Connect to database
+	 * 
 	 * @param array $config
 	 */
 	protected function connect(array $config)
@@ -94,6 +96,7 @@ class Database extends \framework\core\BaseComponent
 
     /**
      * Check for PDO statement
+	 * 
      * @throws \framework\core\Exception
      */
     private function checkStatement()
@@ -107,6 +110,7 @@ class Database extends \framework\core\BaseComponent
 
     /**
      * Set query and execute
+	 * 
      * @param string $query
      * @param array $params
      * @param boolean $execute
@@ -125,8 +129,9 @@ class Database extends \framework\core\BaseComponent
 
     /**
      * Get record
+	 * 
      * @param integer $fetchType
-     * @return array
+     * @return array|false
      */
     public function get()
     {
@@ -136,6 +141,7 @@ class Database extends \framework\core\BaseComponent
 
     /**
      * Get all records
+	 * 
      * @return array
      */
     public function getAll()
@@ -146,6 +152,7 @@ class Database extends \framework\core\BaseComponent
 
     /**
      * Insert new row into table
+	 * 
      * @param string $tableName
      * @param array $columns
      * @return boolean|integer
@@ -180,6 +187,7 @@ class Database extends \framework\core\BaseComponent
 
     /**
      * Catch called method. Call method from PDO statement
+	 * 
      * @param string $name
      * @param array $arguments
 	 * @return void|mixed
