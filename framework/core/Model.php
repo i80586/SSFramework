@@ -12,70 +12,64 @@ namespace framework\core;
 abstract class Model
 {
 
-    /**
-     * Attributes array
-     * @var array 
-     */
-    public $attributes = [];
+	/**
+	 * List of attributes
+	 * 
+	 * @var array 
+	 */
+	public $attributes = [];
 
-    /**
-     * Get model instance.
-     * @return object
-     */
-    public static function model()
-    {
-        static $owner = null;
+	/**
+	 * Get model instance.
+	 * 
+	 * @return object
+	 */
+	public static function model()
+	{
+		static $owner = null;
 
-        if (null === $owner) {
-            $ownerClassName = get_called_class();
-            $owner = new $ownerClassName();
-        }
+		if (null === $owner) {
+			$ownerClassName = get_called_class();
+			$owner = new $ownerClassName();
+		}
 
-        return $owner;
-    }
+		return $owner;
+	}
 
-    /**
-     * Get attribute
-     * @param string $name
-     */
-    public function __get($name)
-    {
-        return $this->getAttribute($name);
-    }
+	/**
+	 * Get attribute
+	 * 
+	 * @param string $name
+	 */
+	public function __get($name)
+	{
+		return $this->getAttribute($name);
+	}
 
-    /**
-     * Check for existing attribute
-     * @param string $name
-     * @throws \framework\core\Exception
-     */
-    private function attributeExists($name)
-    {
-        if (!isset($this->attributes[$name])) {
-            throw new \framework\core\Exception('Attribute <b>:a</b> not found in <b>:m</b> model', 
-                    [':a' => $name, ':m' => get_class($this)]);
-        }
-        return true;
-    }
+	/**
+	 * Get attribute value
+	 * 
+	 * @param string $name
+	 * @return void|mixed
+	 * @throws \framework\core\Exception
+	 */
+	public function getAttribute($name)
+	{
+		if (!isset($this->attributes[$name])) {
+			throw new \framework\core\Exception('Attribute <b>:a</b> not found in <b>:m</b> model', 
+						[':a' => $name, ':m' => get_class($this)]);
+		}
+		return $this->attributes[$name];
+	}
 
-    /**
-     * Get attribute value
-     * @param string $name
-     * @return string
-     */
-    public function getAttribute($name)
-    {
-        if ($this->attributeExists($name)) {
-            return $this->attributes[$name];
-        }
-    }
-
-    /**
-     * Set attributes
-     * @param array $attributes
-     */
-    public function setAttributes(array $attributes)
-    {
-        $this->attributes = $attributes;
-    }
+	/**
+	 * Set attributes
+	 * 
+	 * @param array $attributes
+	 */
+	public function setAttributes(array $attributes)
+	{
+		$this->attributes = $attributes;
+	}
 
 }
