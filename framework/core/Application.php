@@ -64,27 +64,27 @@ class Application
 	 */
 	public function start()
 	{
+		// framework initialization
 		$this->init();
 		
+		// get controller and action
 		list($controller, $action) = self::urls()->parse($_GET);
 
 		$controllerClass = 'app\controllers\\' . ucfirst($controller) . 'Controller';
 		$actionName = 'on' . ucfirst($action);
-
+		
+		// check for controller class
 		try {
-			$reflectionMethod = new \ReflectionMethod($controllerClass, $actionName);
+			$reflectionClass = new \ReflectionClass($controllerClass);
 		} catch (\ReflectionException $e) {
-			throw new Exception('Action <b>:a</b> not found in <b>:c</b>.', array(':a' => $action, ':c' => $controllerClass));
+			throw new Exception('Controller <b>:c</b> not found.', array(':c' => $controllerClass));
 		}
-
-		$reflactionClass = $reflectionMethod->getDeclaringClass();
-
-		if (!$reflactionClass->isSubclassOf('app\components\Controller')) {
-			throw new Exception("Controller <b>:c</b> must be a child class of app\components\Controller", array(':c' => $controllerClass));
-		}
-
-		if (!$reflactionClass->hasMethod($actionName)) {
-			throw new Exception("Action <b>:a</b> not found in <b>%c</b>", array(':a' => $action, ':c' => $controllerClass));
+		
+		// check for action method
+		try {
+			$reflectionMethod = $reflectionClass->getMethod($actionName);
+		} catch (\ReflectionException $e) {
+			throw new Exception("Action <b>:a</b> not found in <b>:c</b>", array(':a' => $action, ':c' => $controllerClass));
 		}
 		
 		// get method parameters
@@ -100,7 +100,7 @@ class Application
 		}
 		
 		// run method with parameters
-		$reflectionMethod->invokeArgs($reflactionClass->newInstance(), $parameters);
+		$reflectionMethod->invokeArgs($reflectionClass->newInstance(), $parameters);
 	}
 
 	/**
