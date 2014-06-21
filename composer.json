@@ -1,0 +1,7 @@
+{
+    "name": "i80586/ss-framework",
+    "description": "Small & Simple php micro-framework",
+    "require": {
+        "php": ">=5.4.0"
+    }
+}
