@@ -86,8 +86,21 @@ class Application
 		if (!$reflactionClass->hasMethod($actionName)) {
 			throw new Exception("Action <b>:a</b> not found in <b>%c</b>", array(':a' => $action, ':c' => $controllerClass));
 		}
-
-		$reflectionMethod->invoke($reflactionClass->newInstance());
+		
+		// get method parameters
+		$methodParameters = $reflectionMethod->getParameters();
+		
+		// check method parameters in query
+		$parameters = [];
+		foreach ($methodParameters as $param) {
+			if (null === ($paramValue = self::request()->getQuery($param->name))) {
+				throw new Exception('Parameter <b>:param</b> not found in query', [':param' => $param->name]);
+			}
+			$parameters[$param->name] = $paramValue;
+		}
+		
+		// run method with parameters
+		$reflectionMethod->invokeArgs($reflactionClass->newInstance(), $parameters);
 	}
 
 	/**
