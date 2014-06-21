@@ -3,5 +3,24 @@
     "description": "Small & Simple php micro-framework",
     "require": {
         "php": ">=5.4.0"
+    },
+    "repositories": [
+    {
+        "type": "package",
+        "package": {
+            "name": "i80586/ss-framework",
+            "version": "dev-master",
+            "source": {
+                "url": "https://github.com/i80586/SSFramework.git",
+                "type": "git",
+                "reference": "master"
+            },
+            "autoload": {
+                "psr-0" : {
+                    "Weaverryan\\DangerZone" : "src"
+                }
+            }
+        }
     }
+    ]
 }
