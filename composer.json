@@ -17,7 +17,7 @@
             },
             "autoload": {
                 "psr-0" : {
-                    "i80586\\SSFramework" : "framework/"
+                    "i80586\\SSFramework" : "framework"
                 }
             }
         }
