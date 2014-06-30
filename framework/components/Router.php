@@ -2,29 +2,34 @@
 
 namespace framework\components;
 
-use \framework\core\Application;
-
 /**
- * Urls class
+ * Router class
+ * Parse query, url
  * 
  * @author Rasim Ashurov <rasim.ashurov@gmail.com>
  * @date 19 April 2014
  */
-class Urls extends \framework\core\BaseComponent
+class Router extends \framework\core\BaseComponent
 {
-
     /**
-     * Parse route
+     * Parse query
+	 * 
+	 * @param array $params
      * @return array
      */
-    public function parse($getParams)
+    public function parseQuery(array $params)
     {
-        if (isset($getParams['r'])) {
-            $route = preg_replace('/[^a-zA-Z\/]/', '', $getParams['r']);
-            return (false === strpos($route, '/')) ? [$route, 'index'] : explode('/', $route);
+        if (isset($params['r'])) {
+            $route = preg_replace('/[^a-zA-Z\/]/', '', $params['r']);
+			
+			if (false === strpos($route, '/')) {
+				return ['controller' => $route];
+			}
+			
+			list($controller, $action) = explode('/', $route);
+			return ['controller' => $controller, 'action' => $action];
         }
-
-        return [Application::getConfig()['app']['defaultController'], 'index'];
+        return [];
     }
 
 }
