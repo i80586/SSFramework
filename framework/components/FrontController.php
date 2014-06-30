@@ -3,6 +3,7 @@
 namespace framework\components;
 
 use framework\core\Exception;
+use framework\core\Application;
 
 /**
  * framework\components\FrontController class
@@ -53,10 +54,50 @@ class FrontController implements IFrontController
 	 * @param array $options
 	 */
 	public function __construct(array $options = [])
+	{	
+		$this->setController($this->getController($options))
+			 ->setAction($this->getAction($options))
+			 ->setParams($this->getParams($options));
+	}
+	
+	/**
+	 * Get controller
+	 * 
+	 * @param array $options
+	 * @return string
+	 */
+	private function getController(array $options)
 	{
-		$this->setController(isset($options['controller']) ? $options['controller'] : self::DEFAULT_CONTROLLER)
-			 ->setAction(isset($options['action']) ? $options['action'] : self::DEFAULT_ACTION)
-			 ->setParams(isset($options['params']) ? $options['params'] : []);
+		$controller = isset($options['controller']) ? $options['controller'] : null;
+		if (null === $controller) {
+			$controller = isset(Application::getConfig()['defaultController']) ?
+								Application::getConfig()['defaultController'] :
+								self::DEFAULT_CONTROLLER;
+		}
+		
+		return $controller;
+	}
+	
+	/**
+	 * Get action
+	 * 
+	 * @param array $options
+	 * @return array
+	 */
+	private function getAction(array $options)
+	{
+		return isset($options['action']) ? $options['action'] : self::DEFAULT_ACTION;
+	}
+	
+	/**
+	 * Get params
+	 * 
+	 * @param array $options
+	 * @return array
+	 */
+	private function getParams(array $options)
+	{
+		return isset($options['params']) ? $options['params'] : [];
 	}
 	
 	/**
