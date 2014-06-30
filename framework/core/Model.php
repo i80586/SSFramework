@@ -26,14 +26,13 @@ abstract class Model
 	 */
 	public static function model()
 	{
-		static $owner = null;
-
-		if (null === $owner) {
-			$ownerClassName = get_called_class();
-			$owner = new $ownerClassName();
+		static $child = null;
+		
+		if (null === $child) {
+			$child = new static;
 		}
 
-		return $owner;
+		return $child;
 	}
 
 	/**
