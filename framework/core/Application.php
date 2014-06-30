@@ -2,8 +2,6 @@
 
 namespace framework\core;
 
-use \framework\core\Exception;
-
 /**
  * Core class of Application
  * 
