@@ -15,23 +15,36 @@ class Application
 
 	/**
 	 * Application config
+	 * 
 	 * @var array 
 	 */
 	private static $_config;
 
 	/**
 	 * Database handler
+	 * 
 	 * @var \framework\core\Database 
 	 */
 	private static $_dbHandler = null;
 
 	/**
-	 * Class construction
+	 * Class constructor
+	 * 
 	 * @param array $config
 	 */
 	public function __construct(array $config)
 	{
 		self::$_config = $config;
+	}
+	
+	/**
+	 * Register namespaces and autoloader
+	 */
+	private function registerNamespaces()
+	{
+		require FRAMEWORK_DIR . 'core/SplClassLoader.php';
+		(new \SplClassLoader('framework', BASE_PATH))->register();
+		(new \SplClassLoader('app', BASE_PATH))->register();
 	}
 
 	/**
@@ -49,62 +62,22 @@ class Application
 	}
 
 	/**
-	 * Register namespaces and autoloader
-	 */
-	private function registerNamespaces()
-	{
-		require FRAMEWORK_DIR . 'core/SplClassLoader.php';
-		(new \SplClassLoader('framework', BASE_PATH))->register();
-		(new \SplClassLoader('app', BASE_PATH))->register();
-	}
-
-	/**
-	 * Start web application
-	 * @throws \framework\core\Exception
+	 * Starts web application
 	 */
 	public function start()
 	{
 		// framework initialization
 		$this->init();
 		
-		// get controller and action
-		list($controller, $action) = self::urls()->parse($_GET);
-
-		$controllerClass = 'app\controllers\\' . ucfirst($controller) . 'Controller';
-		$actionName = 'on' . ucfirst($action);
-		
-		// check for controller class
-		try {
-			$reflectionClass = new \ReflectionClass($controllerClass);
-		} catch (\ReflectionException $e) {
-			throw new Exception('Controller <b>:c</b> not found.', array(':c' => $controllerClass));
-		}
-		
-		// check for action method
-		try {
-			$reflectionMethod = $reflectionClass->getMethod($actionName);
-		} catch (\ReflectionException $e) {
-			throw new Exception("Action <b>:a</b> not found in <b>:c</b>", array(':a' => $action, ':c' => $controllerClass));
-		}
-		
-		// get method parameters
-		$methodParameters = $reflectionMethod->getParameters();
-		
-		// check method parameters in query
-		$parameters = [];
-		foreach ($methodParameters as $param) {
-			if (null === ($paramValue = self::request()->getQuery($param->name))) {
-				throw new Exception('Parameter <b>:param</b> not found in query', [':param' => $param->name]);
-			}
-			$parameters[$param->name] = $paramValue;
-		}
-		
-		// run method with parameters
-		$reflectionMethod->invokeArgs($reflectionClass->newInstance(), $parameters);
+		// get controller & action from query if exist
+		$options = self::router()->parseQuery($_GET);
+		// run action
+		(new \framework\components\FrontController($options))->run();
 	}
 
 	/**
 	 * Returns database handler
+	 * 
 	 * @return framework\core\Database
 	 */
 	public static function db()
@@ -117,6 +90,7 @@ class Application
 
 	/**
 	 * Magic method for catch static methods
+	 * 
 	 * @param string $name
 	 * @param array $arguments
 	 * @return object
@@ -128,6 +102,7 @@ class Application
 
 	/**
 	 * Get base url
+	 * 
 	 * @return string
 	 */
 	public static function getBaseUrl()
@@ -137,6 +112,7 @@ class Application
 
 	/**
 	 * Get current configuration
+	 * 
 	 * @return array
 	 */
 	public static function getConfig()
@@ -146,6 +122,7 @@ class Application
 
 	/**
 	 * Structured data dumper
+	 * 
 	 * @param mixed $data
 	 * @param boolean $terminate
 	 */
@@ -160,6 +137,7 @@ class Application
 
 	/**
 	 * Get application name
+	 * 
 	 * @return string
 	 */
 	public static function getAppName()
@@ -169,6 +147,7 @@ class Application
 
 	/**
 	 * Get version of the framework
+	 * 
 	 * @return string
 	 */
 	public static function getVersion()
