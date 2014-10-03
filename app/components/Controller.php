@@ -14,6 +14,6 @@ class Controller extends \framework\core\BaseController
     /**
      * @var string
      */
-    protected $layout = 'layout/main';
+    public $layout = 'layout/main';
 
 }

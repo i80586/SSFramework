@@ -3,7 +3,7 @@
 namespace framework\components;
 
 use framework\core\Exception;
-use framework\core\Application;
+use framework\core\App;
 
 /**
  * framework\components\FrontController class
@@ -70,9 +70,9 @@ class FrontController implements IFrontController
 	{
 		$controller = isset($options['controller']) ? $options['controller'] : null;
 		if (null === $controller) {
-			$controller = isset(Application::getConfig()['defaultController']) ?
-								Application::getConfig()['defaultController'] :
-								self::DEFAULT_CONTROLLER;
+            if (null === ($controller = App::getConfig('defaultController'))) {
+                $controller = self::DEFAULT_CONTROLLER;
+            }
 		}
 		
 		return $controller;
@@ -109,7 +109,7 @@ class FrontController implements IFrontController
 	 */
 	public function setController($controller)
 	{
-		if (null !== $controller) {
+		if (!is_null($controller)) {
 			$this->_controller = $controller;
 		}
 		
@@ -179,9 +179,10 @@ class FrontController implements IFrontController
 		// check method parameters in query
 		$parameters = [];
 		foreach ($methodParameters as $param) {
-			if (null === ($paramValue = self::request()->getQuery($param->name))) {
-				throw new Exception('Parameter <b>:param</b> not found in query', 
-							[':param' => $param->name]);
+			if (null === ($paramValue = App::request()->getQuery($param->name))) {
+				throw new Exception('Parameter <b>:param</b> not found in query', [
+                                        ':param' => $param->name
+                                    ]);
 			}
 			$parameters[$param->name] = $paramValue;
 		}

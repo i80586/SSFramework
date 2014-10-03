@@ -2,7 +2,7 @@
 
 namespace framework\core;
 
-use \framework\core\Application;
+use \framework\core\App;
 
 /**
  * Abstract class of controller
@@ -15,18 +15,28 @@ abstract class BaseController
 
     /**
      * Layout for views
+     * 
      * @var string
      */
-    protected $layout;
+    public $layout;
 
     /**
      * Title of page
-     * @var string 
+     * 
+     * @var string
      */
-    protected $pageTitle;
+    public $pageTitle;
+    
+    /**
+     * Media resources url
+     * 
+     * @var string
+     */
+    public $mediaUrl = null;
 
     /**
      * Render view file with layout
+     * 
      * @param string $view
      * @param array $data
      */
@@ -43,6 +53,7 @@ abstract class BaseController
 	
 	/**
 	 * Get layout file path
+     * 
 	 * @return string
 	 */
 	protected function getLayoutFile()
@@ -52,6 +63,7 @@ abstract class BaseController
 	
 	/**
 	 * Get controller name
+     * 
 	 * @param string $controller
 	 * @return string
 	 */
@@ -63,6 +75,7 @@ abstract class BaseController
 
 	/**
      * Render view file without layout
+     * 
      * @param string $view
      * @param array $data
      */
@@ -73,6 +86,7 @@ abstract class BaseController
 
     /**
      * Process view file
+     * 
      * @param string $view
      * @param array $data
      * @return string
@@ -96,6 +110,7 @@ abstract class BaseController
 
     /**
      * Redirect to url/route
+     * 
      * @param string $route
      * @param array $params
      * @param integer $redirectCode
@@ -105,7 +120,7 @@ abstract class BaseController
         if (('/' == substr($route, 0, 1)) || (false !== strpos('http://', $route)) || (false !== strpos('https://', $route))) {
             $redirectUrl = $route;
         } else {
-            $redirectUrl = Application::getBaseUrl() . '?r=' . preg_replace('/[^a-zA-Z\/]/', '', $route);
+            $redirectUrl = App::getBaseUrl() . '?r=' . preg_replace('/[^a-zA-Z\/]/', '', $route);
 
             $redirectUrl .= array_map(function($param, $value) {
                         return sprintf("&%s=%s", $param, $value);
@@ -117,6 +132,7 @@ abstract class BaseController
 
     /**
      * Get page title
+     * 
      * @return string
      */
     public function getPageTitle()
@@ -126,22 +142,35 @@ abstract class BaseController
 
     /**
      * Set current page title
-     * @param string $pageTitle
+     * 
+     * @param string $title
      */
-    public function setPageTitle($pageTitle)
+    public function setPageTitle($title)
     {
-        $this->pageTitle = $pageTitle;
+        $this->pageTitle = $title;
     }
 	
-	/**
-     * Get resources url
-     * @return string
+    /**
+     * Set media url
+     * 
+     * @param string $url
      */
-    public static function getMediaUrl()
+    public function setMediaUrl($url)
     {
-        return (isset(Application::$_config['app']['staticUrl'])) ?
-						Application::$_config['app']['staticUrl'] :
-						'/media';
+        $this->mediaUrl = $url;
+    }
+    
+	/**
+     * Get media resources url
+     * 
+     * @return mixed
+     */
+    public function getMediaUrl()
+    {
+        if (null === $this->mediaUrl) {
+            $this->mediaUrl = App::getConfig('mediaUrl');
+        }
+        return $this->mediaUrl;
     }
 
 }

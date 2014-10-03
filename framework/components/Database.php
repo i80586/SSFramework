@@ -3,7 +3,7 @@
 namespace framework\components;
 
 use framework\core\Exception;
-use framework\core\Application;
+use framework\core\App;
 
 /**
  * Class Database
@@ -17,56 +17,62 @@ class Database extends \framework\core\BaseComponent
 
     /**
      * PDO handler
+     * 
      * @var \PDO 
      */
     private $_pdoHandler = null;
 
     /**
      * Current PDO statement
+     * 
      * @var \PDOStatement
      */
     private $_pdoStatement = false;
 
     /**
      * Default fetch mode
+     * 
      * @var integer 
      */
     private $_defaultFetchMode = \PDO::FETCH_ASSOC;
 
     /**
      * Class construction
-	 * 
+     * 
      * @throws \framework\core\Exception
      */
     public function __construct()
     {
         if (null === $this->_pdoHandler) {
-            $dbConfig = isset(Application::getConfig()['db']) ? Application::getConfig()['db'] : null;
-
-            if (null === $dbConfig) {
+            if (null === ($dbConfig = App::getConfig('db'))) {
                 throw new Exception('Database connection is not set');
             }
 
             $this->connect($dbConfig);
         }
     }
-	
-	/**
-	 * Connect to database
-	 * 
-	 * @param array $config
-	 */
-	protected function connect(array $config)
-	{
-		$this->_pdoHandler = new \PDO($config['dsn'], $config['username'], $config['password'], [
-			\PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES ' . $config['encoding']
-		]);
-		$this->_pdoHandler->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-        $this->_pdoHandler->setAttribute(\PDO::ATTR_EMULATE_PREPARES, false);
-	}
 
-	/**
+    /**
+     * Connect to database
+     * 
+     * @param array $config
+     */
+    protected function connect(array $config)
+    {
+        $initParams = [];
+        
+        if (isset($config['encoding'])) {
+            $initParams =  [\PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES ' . $config['encoding']];
+        }
+        
+        $this->_pdoHandler = new \PDO($config['dsn'], $config['username'], $config['password'], $initParams);
+        $this->_pdoHandler->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+        $this->_pdoHandler->setAttribute(\PDO::ATTR_EMULATE_PREPARES, false);
+    }
+
+    /**
      * Quote value
+     * 
      * @param mixed $value
      * @return mixed
      */
@@ -85,6 +91,7 @@ class Database extends \framework\core\BaseComponent
 
     /**
      * Apply params to string
+     * 
      * @param string $string
      * @param array $params
      * @return string
@@ -96,25 +103,25 @@ class Database extends \framework\core\BaseComponent
 
     /**
      * Check for PDO statement
-	 * 
+     * 
      * @throws \framework\core\Exception
      */
     private function checkStatement()
     {
         if (false === $this->_pdoStatement) {
             throw new Exception('Statement is invalid');
-        } else {
-            $this->_pdoStatement->execute();
         }
+        
+        $this->_pdoStatement->execute();
     }
 
     /**
      * Set query and execute
-	 * 
+     * 
      * @param string $query
      * @param array $params
      * @param boolean $execute
-	 * @return Database;
+     * @return Database;
      */
     public function setQuery($query, array $params = [], $execute = true)
     {
@@ -129,11 +136,11 @@ class Database extends \framework\core\BaseComponent
 
     /**
      * Get record
-	 * 
+     * 
      * @param integer $fetchType
      * @return array|false
      */
-    public function get()
+    public function getOne()
     {
         $this->checkStatement();
         return $this->_pdoStatement->fetch($this->_defaultFetchMode);
@@ -141,7 +148,7 @@ class Database extends \framework\core\BaseComponent
 
     /**
      * Get all records
-	 * 
+     * 
      * @return array
      */
     public function getAll()
@@ -152,7 +159,7 @@ class Database extends \framework\core\BaseComponent
 
     /**
      * Insert new row into table
-	 * 
+     * 
      * @param string $tableName
      * @param array $columns
      * @return boolean|integer
@@ -161,14 +168,15 @@ class Database extends \framework\core\BaseComponent
     {
         $fields = '`' . implode('`,`', array_keys($columns)) . '`';
         $values = implode(',', array_map(function($value) {
-                    return $this->quoteValue($value);
-                }, array_values($columns)));
+                                return $this->quoteValue($value);
+                            },
+                            array_values($columns)));
 
-		$queryString = 'INSERT';
-		if ($ignore) {
-			$queryString .= ' IGNORE';
-		}
-		$queryString .= ' INTO :table (:columns) VALUES (:values)';
+        $queryString = 'INSERT';
+        if ($ignore) {
+            $queryString .= ' IGNORE';
+        }
+        $queryString .= ' INTO :table (:columns) VALUES (:values)';
 
         $query = $this->applyParams($queryString, [
             ':table' => '`' . $tableName . '`',
@@ -177,24 +185,24 @@ class Database extends \framework\core\BaseComponent
         ]);
 
         $this->_pdoStatement = $this->_pdoHandler->prepare($query);
-		
+
         if (false === $this->_pdoStatement->execute()) {
             return false;
         }
-		
+
         return $this->_pdoStatement->rowCount();
     }
 
     /**
      * Catch called method. Call method from PDO statement
-	 * 
+     * 
      * @param string $name
      * @param array $arguments
-	 * @return void|mixed
+     * @return void|mixed
      */
     public function __call($name, array $arguments = [])
     {
-        if (false !== $this->_pdoStatement) {
+        if ($this->_pdoStatement) {
             return call_user_func_array([$this->_pdoStatement, $name], $arguments);
         }
     }
