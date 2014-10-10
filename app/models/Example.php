@@ -16,5 +16,4 @@ class Example extends \framework\core\Model
 	{
 		return \framework\core\App::getName() . ' is ready!';
 	}
-	
 }
