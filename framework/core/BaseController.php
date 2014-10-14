@@ -95,7 +95,12 @@ abstract class BaseController
     protected function processView($view, array $data = [])
     {
         $controllerName = lcfirst(str_replace('Controller', '', $this->getControllerName(get_class($this))));
-        $viewFile = BASE_PATH . '/app/views/' . $controllerName . '/' . $view . '.php';
+        
+        if (!is_null(App::$get->module())) {
+            $viewFile = BASE_PATH . '/app/modules/' . App::$get->module() . '/views/' . $controllerName . '/' . $view . '.php';
+        } else {
+            $viewFile = BASE_PATH . '/app/views/' . $controllerName . '/' . $view . '.php';
+        }
 
         if (is_file($viewFile)) {
             extract($data);
@@ -120,7 +125,7 @@ abstract class BaseController
         if (('/' == substr($route, 0, 1)) || (false !== strpos('http://', $route)) || (false !== strpos('https://', $route))) {
             $redirectUrl = $route;
         } else {
-            $redirectUrl = App::getBaseUrl() . '?r=' . preg_replace('/[^a-zA-Z\/]/', '', $route);
+            $redirectUrl = App::$get->baseUrl() . '?r=' . preg_replace('/[^a-zA-Z\/]/', '', $route);
 
             $redirectUrl .= array_map(function($param, $value) {
                         return sprintf("&%s=%s", $param, $value);
@@ -168,7 +173,7 @@ abstract class BaseController
     public function getMediaUrl()
     {
         if (null === $this->mediaUrl) {
-            $this->mediaUrl = App::getConfig('mediaUrl');
+            $this->mediaUrl = App::$get->config('mediaUrl');
         }
         return $this->mediaUrl;
     }

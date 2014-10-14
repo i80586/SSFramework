@@ -61,7 +61,7 @@ class Exception
     {
         $header = $errorType === self::ERR_EXCEPTION ? 'framework\core\Exception' : 'PHP Error';
         include FRAMEWORK_DIR . 'views/error.php';
-        App::stop();
+        App::$get->stop();
     }
 
 }

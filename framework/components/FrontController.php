@@ -10,7 +10,7 @@ use framework\core\App;
  * Interface of front controllers
  * 
  * @author Rasim Ashurov <rasim.ashurov@gmail.com>
- * @date 26 June 2012
+ * @date 26 June 2013
  */
 class FrontController implements IFrontController
 {
@@ -20,7 +20,13 @@ class FrontController implements IFrontController
 	const DEFAULT_CONTROLLER = 'main';
 	const DEFAULT_ACTION = 'index';
 	
-	/**
+    /**
+     * Module name
+     * 
+     * @var string 
+     */
+    protected $_module = null;
+    /**
 	 * Controller class name
 	 * 
 	 * @var string 
@@ -54,25 +60,42 @@ class FrontController implements IFrontController
 	 * @param array $options
 	 */
 	public function __construct(array $options = [])
-	{	
-		$this->setController($this->getController($options))
+	{
+		$this->setModule($this->getModule($options))
+             ->setController($this->getController($options))
 			 ->setAction($this->getAction($options))
 			 ->setParams($this->getParams($options));
 	}
 	
+    /**
+     * Get module
+     * 
+     * @param array $options
+     * @return mixed
+     */
+    public function getModule(array $options = null)
+    {
+        if (null === $options) {
+            return $this->_module;
+        }
+        return (isset($options['module'])) ? $options['module'] : null;
+    }
+    
 	/**
 	 * Get controller
 	 * 
 	 * @param array $options
 	 * @return string
 	 */
-	private function getController(array $options)
+	public function getController(array $options = null)
 	{
+        if (null === $options) {
+            return $this->_controller;
+        }
+        
 		$controller = isset($options['controller']) ? $options['controller'] : null;
-		if (null === $controller) {
-            if (null === ($controller = App::getConfig('defaultController'))) {
-                $controller = self::DEFAULT_CONTROLLER;
-            }
+		if (empty($controller) && is_null($controller = App::$get->config('defaultController'))) {
+            $controller = self::DEFAULT_CONTROLLER;
 		}
 		
 		return $controller;
@@ -84,8 +107,12 @@ class FrontController implements IFrontController
 	 * @param array $options
 	 * @return array
 	 */
-	private function getAction(array $options)
+	public function getAction(array $options = null)
 	{
+        if (null === $options) {
+            return $this->_action;
+        }
+        
 		return isset($options['action']) ? $options['action'] : self::DEFAULT_ACTION;
 	}
 	
@@ -99,6 +126,34 @@ class FrontController implements IFrontController
 	{
 		return isset($options['params']) ? $options['params'] : [];
 	}
+    
+    /**
+     * Set module
+     * 
+     * @param mixed $module
+     * @return \framework\components\FrontController
+     * @throws Exception
+     */
+    public function setModule($module)
+    {
+        if (!is_null($module)) {
+            $moduleClass = 'app\modules\\' . $module . '\\' . ucfirst($module) . 'Module';
+
+            // check for module class
+            try {
+                $this->_reflection = new \ReflectionClass($moduleClass);
+            } catch (\ReflectionException $e) {
+                throw new Exception('Module <b>:m</b> not found.', [':m' => $moduleClass]);
+            }
+
+            $this->_module = [
+                'name' => $module,
+                'class' => $moduleClass
+            ];
+        }
+        
+		return $this;
+    }
 	
 	/**
 	 * Set controller class name
@@ -109,12 +164,12 @@ class FrontController implements IFrontController
 	 */
 	public function setController($controller)
 	{
-		if (!is_null($controller)) {
-			$this->_controller = $controller;
-		}
-		
-		$controllerClass = 'app\controllers\\' . ucfirst($this->_controller) . 'Controller';
-		
+        if (!is_null($this->_module)) {
+            $controllerClass = 'app\modules\\' . $this->_module['name'] . '\controllers\\' . ucfirst($controller) . 'Controller';
+        } else {
+            $controllerClass = 'app\controllers\\' . ucfirst($controller) . 'Controller';
+        }
+        		
 		// check for controller class
 		try {
 			$this->_reflection = new \ReflectionClass($controllerClass);
@@ -135,11 +190,7 @@ class FrontController implements IFrontController
 	 */
 	public function setAction($action)
 	{
-		if (null !== $action) {
-			$this->_action = $action;
-		}
-		
-		$actionName = 'on' . ucfirst($this->_action);
+		$actionName = 'on' . ucfirst($action);
 		
 		// check for action method
 		try {
@@ -179,7 +230,7 @@ class FrontController implements IFrontController
 		// check method parameters in query
 		$parameters = [];
 		foreach ($methodParameters as $param) {
-			if (null === ($paramValue = App::request()->getQuery($param->name))) {
+			if (null === ($paramValue = App::$get->request()->getQuery($param->name))) {
 				throw new Exception('Parameter <b>:param</b> not found in query', [
                                         ':param' => $param->name
                                     ]);

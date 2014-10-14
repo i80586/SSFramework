@@ -11,6 +11,7 @@ namespace framework\components;
  */
 class Router extends \framework\core\BaseComponent
 {
+    
     /**
      * Parse query
 	 * 
@@ -26,9 +27,21 @@ class Router extends \framework\core\BaseComponent
 				return ['controller' => $route];
 			}
 			
-			list($controller, $action) = explode('/', $route);
-			return ['controller' => $controller, 'action' => $action];
+            $explodedQuery = array_filter(explode('/', $route));
+            if (isset($explodedQuery[2])) {
+                return [
+                    'module' => $explodedQuery[0],
+                    'controller' => $explodedQuery[1],
+                    'action' => $explodedQuery[2]
+                ];
+            } else {
+                return [
+                    'controller' => $explodedQuery[0],
+                    'action' => $explodedQuery[1]
+                ];
+            }
         }
+        
         return [];
     }
 

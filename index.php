@@ -6,4 +6,4 @@ define('FRAMEWORK_DIR', BASE_PATH . '/framework/');
 require FRAMEWORK_DIR . 'core/App.php';
 
 // start application
-(new \framework\core\App(require BASE_PATH . '/config/default.php'))->start();
+\framework\core\App::start(require BASE_PATH . '/config/default.php');

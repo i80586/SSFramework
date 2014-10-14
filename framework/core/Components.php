@@ -88,10 +88,10 @@ class Components
      */
     protected static function getComponentPath($name)
     {
-        if (!isset(App::getConfig('components')[$name])) {
+        if (!isset(App::$get->config('components')[$name])) {
             return '\framework\components\\' . ucfirst($name);
         }
-        return App::getConfig('components')[$name]['path'];
+        return App::$get->config('components')[$name]['path'];
     }
 
 }

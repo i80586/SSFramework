@@ -10,20 +10,57 @@ namespace framework\core;
  */
 class App
 {
+    /**
+     * Framework version
+     */
+    const VERSION = '0.4';
 
+    /**
+     * Application handler
+     * 
+     * @var framework\core\App 
+     */
+    public static $get = null;
+    
     /**
      * Application config
      * 
      * @var array 
      */
-    private static $_config;
+    private $_config;
 
     /**
      * Database handler
      * 
      * @var \framework\core\Database 
      */
-    private static $_dbHandler = null;
+    private $_dbHandler = null;
+    
+    /**
+     * Front controller handler
+     * 
+     * @var \framework\components\FrontController  
+     */
+    private $_fcHandler = null;
+    
+    /**
+     * Module
+     * 
+     * @var array 
+     */
+    private $_module = null;
+    /**
+     * Controller
+     * 
+     * @var string 
+     */
+    private $_controller = null;
+    /**
+     * Action
+     * 
+     * @var string 
+     */
+    private $_action = null;    
 
     /**
      * Class constructor
@@ -32,7 +69,7 @@ class App
      */
     public function __construct(array $config)
     {
-        self::$_config = $config;
+        $this->_config = $config;
     }
 
     /**
@@ -50,11 +87,11 @@ class App
      */
     protected function init()
     {
-        if (isset(self::$_config['app']['timezone'])) {
-            date_default_timezone_set(self::$_config['app']['timezone']);
+        if (isset(self::$get->_config['app']['timezone'])) {
+            date_default_timezone_set(self::$get->_config['app']['timezone']);
         }
         // register namespaces and autoloader
-        $this->registerNamespaces();
+        self::$get->registerNamespaces();
         set_error_handler('\framework\core\Exception::catchError', E_ALL);
         set_exception_handler('\framework\core\Exception::catchException');
     }
@@ -62,16 +99,58 @@ class App
     /**
      * Starts web application
      */
-    public function start()
+    public static function start(array $config)
     {
+        self::$get = new self($config);
+        
         // framework initialization
-        $this->init();
-
-        // get controller & action from query if exist
-        $options = self::router()->parseQuery($_GET);
+        self::$get->init();
         
         // run action
-        (new \framework\components\FrontController($options))->run();
+        self::$get->_fcHandler = new \framework\components\FrontController(
+            // get query options
+            self::$get->router()->parseQuery($_GET)
+        );
+        self::$get->_fcHandler->run();
+    }
+    
+    /**
+     * Get module
+     * 
+     * @return mixed
+     */
+    public function module()
+    {
+        if (null === self::$get->_module) {
+            self::$get->_module = self::$get->_fcHandler->getModule();
+        }
+        return self::$get->_module['name'];
+    }
+    
+    /**
+     * Get controller
+     * 
+     * @return string
+     */
+    public function controller()
+    {
+        if (null === self::$get->_controller) {
+            self::$get->_controller = self::$get->_fcHandler->getContoller();
+        }
+        return self::$get->_controller;
+    }
+    
+    /**
+     * Get action
+     * 
+     * @return string
+     */
+    public function action()
+    {
+        if (null === self::$get->_action) {
+            self::$get->_action = self::$get->_fcHandler->getAction();
+        }
+        return self::$get->_action;
     }
 
     /**
@@ -79,12 +158,12 @@ class App
      * 
      * @return framework\core\Database
      */
-    public static function db()
+    public function db()
     {
-        if (null === self::$_dbHandler) {
-            self::$_dbHandler = new \framework\components\Database();
+        if (null === self::$get->_dbHandler) {
+            self::$get->_dbHandler = new \framework\components\Database();
         }
-        return self::$_dbHandler;
+        return self::$get->_dbHandler;
     }
 
     /**
@@ -94,19 +173,19 @@ class App
      * @param array $arguments
      * @return object
      */
-    public static function __callStatic($name, array $arguments = [])
+    public function __call($name, array $arguments = [])
     {
         return Components::getComponent($name, $arguments);
     }
-
+    
     /**
      * Get base url
      * 
      * @return string
      */
-    public static function getBaseUrl()
+    public function baseUrl()
     {
-        return isset(self::$_config['app']['baseUrl']) ? self::$_config['app']['baseUrl'] : '/';
+        return isset(self::$get->_config['app']['baseUrl']) ? self::$get->_config['app']['baseUrl'] : '/';
     }
 
     /**
@@ -114,12 +193,12 @@ class App
      * 
      * @return mixed
      */
-    public static function getConfig($param = null)
+    public function config($param = null)
     {
         if (null === $param) {
-            return self::$_config;
+            return self::$get->_config;
         }
-        return (isset(self::$_config[$param])) ? self::$_config[$param] : null;
+        return (isset(self::$get->_config[$param])) ? self::$get->_config[$param] : null;
     }
 
     /**
@@ -128,7 +207,7 @@ class App
      * @param mixed $data
      * @param boolean $terminate
      */
-    public static function dump($data, $terminate = true)
+    public function dump($data, $terminate = true)
     {
         \framework\components\Dumper::dump($data);
 
@@ -142,9 +221,9 @@ class App
      * 
      * @return string
      */
-    public static function getName()
+    public function name()
     {
-        return 'SSFramework ' . self::getVersion();
+        return 'SSFramework ' . self::$get->version();
     }
 
     /**
@@ -152,15 +231,15 @@ class App
      * 
      * @return string
      */
-    public static function getVersion()
+    public function version()
     {
-        return '0.3';
+        return self::VERSION;
     }
 
     /**
      * Stop application
      */
-    public static function stop()
+    public function stop()
     {
         exit(1);
     }

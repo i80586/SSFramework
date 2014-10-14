@@ -14,6 +14,6 @@ class Example extends \framework\core\Model
 	 */
 	public function getContent()
 	{
-		return \framework\core\App::getName() . ' is ready!';
+		return \framework\core\App::$get->name() . ' is ready!';
 	}
 }

@@ -1,7 +1,7 @@
 <?php
 /* example view file */
 
-$this->pageTitle = framework\core\App::getName();
+$this->pageTitle = framework\core\App::$get->name();
 ?>
 
 <title><?= $this->pageTitle ?></title>

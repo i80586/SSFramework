@@ -11,6 +11,13 @@ namespace framework\components;
  */
 interface IFrontController
 {
+    /**
+     * Set module
+     * 
+     * @param string $module
+     */
+    public function setModule($module);
+    
 	/**
 	 * Set controller
 	 * 

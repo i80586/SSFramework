@@ -169,7 +169,7 @@
             </p>
 
             <div class="version">
-                <?= date('Y-m-d h:i:s') ?> <?= $_SERVER['SERVER_SOFTWARE'] ?> <?= \framework\core\App::getName() ?>	
+                <?= date('Y-m-d h:i:s') ?> <?= $_SERVER['SERVER_SOFTWARE'] ?> <?= \framework\core\App::$get->name() ?>	
             </div>
         </div>
     </body>
