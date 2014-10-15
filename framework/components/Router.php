@@ -23,9 +23,9 @@ class Router extends \framework\core\BaseComponent
         if (isset($params['r'])) {
             $route = preg_replace('/[^a-zA-Z\/]/', '', $params['r']);
 			
-	        if (false === strpos($route, '/')) {
-			    return ['controller' => $route];
-		    }
+	    if (false === strpos($route, '/')) {
+		return ['controller' => $route];
+	    }
 			
             $explodedQuery = array_filter(explode('/', $route));
             if (isset($explodedQuery[2])) {
