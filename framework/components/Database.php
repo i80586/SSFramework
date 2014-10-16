@@ -43,13 +43,11 @@ class Database extends \framework\core\BaseComponent
      */
     public function __construct()
     {
-        if (null === $this->_pdoHandler) {
-            if (null === ($dbConfig = App::$get->config('db'))) {
-                throw new Exception('Database connection is not set');
-            }
-
-            $this->connect($dbConfig);
+        if (null === $this->_pdoHandler && null === ($dbConfig = App::$get->config('db'))) {
+            throw new Exception('Database connection is not set');
         }
+
+        $this->connect($dbConfig);
     }
 
     /**
