@@ -49,18 +49,34 @@ class App
      * @var array 
      */
     private $_module = null;
+    
     /**
      * Controller
      * 
      * @var string 
      */
     private $_controller = null;
+    
     /**
      * Action
      * 
      * @var string 
      */
-    private $_action = null;    
+    private $_action = null;
+    
+    /**
+     * Request component handler
+     * 
+     * @var framework\components\Request 
+     */
+    public $request = null;
+    
+    /**
+     * Base url
+     * 
+     * @var string 
+     */
+    public $baseUrl = null;
 
     /**
      * Class constructor
@@ -73,11 +89,24 @@ class App
     }
 
     /**
+     * Magic method for catch static methods
+     * 
+     * @param string $name
+     * @param array $arguments
+     * @return object
+     */
+    public function __call($name, array $arguments = [])
+    {
+        return Components::getComponent($name, $arguments);
+    }
+    
+    /**
      * Register namespaces and autoloader
      */
     private function registerNamespaces()
     {
         require FRAMEWORK_DIR . 'core/SplClassLoader.php';
+        
         (new \SplClassLoader('framework', BASE_PATH))->register();
         (new \SplClassLoader('app', BASE_PATH))->register();
     }
@@ -87,11 +116,9 @@ class App
      */
     protected function init()
     {
-        if (isset(self::$get->_config['app']['timezone'])) {
-            date_default_timezone_set(self::$get->_config['app']['timezone']);
-        }
         // register namespaces and autoloader
         self::$get->registerNamespaces();
+        
         set_error_handler('\framework\core\Exception::catchError', E_ALL);
         set_exception_handler('\framework\core\Exception::catchException');
     }
@@ -106,14 +133,30 @@ class App
         // framework initialization
         self::$get->init();
         
-        // run action
+        // set configration
+        self::$get->setParams();
+        
+        // set front controller handler
         self::$get->_fcHandler = new \framework\components\FrontController(
             // get query options
             self::$get->router()->parseQuery($_GET)
         );
+        // run action
         self::$get->_fcHandler->run();
     }
     
+    /**
+     * Set params
+     */
+    protected function setParams()
+    {
+        self::$get->request = self::$get->request();
+        if (!is_null(self::$get->config('baseUrl'))) {
+            self::$get->request->setBaseUrl(self::$get->config('baseUrl'));
+        }
+        self::$get->baseUrl = self::$get->request->getBaseUrl();
+    }
+
     /**
      * Get module
      * 
@@ -165,18 +208,6 @@ class App
         }
         return self::$get->_dbHandler;
     }
-
-    /**
-     * Magic method for catch static methods
-     * 
-     * @param string $name
-     * @param array $arguments
-     * @return object
-     */
-    public function __call($name, array $arguments = [])
-    {
-        return Components::getComponent($name, $arguments);
-    }
     
     /**
      * Get base url
@@ -185,7 +216,7 @@ class App
      */
     public function baseUrl()
     {
-        return isset(self::$get->_config['app']['baseUrl']) ? self::$get->_config['app']['baseUrl'] : '/';
+        return self::$get->baseUrl;
     }
 
     /**
