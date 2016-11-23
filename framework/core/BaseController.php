@@ -12,27 +12,26 @@ use \framework\core\App;
  */
 abstract class BaseController
 {
-
     /**
      * Layout for views
      * 
-     * @var string
+     * @property string
      */
     public $layout;
 
     /**
      * Title of page
      * 
-     * @var string
+     * @property string
      */
-    public $pageTitle;
+    public $pageTitle = '';
     
     /**
      * Media resources url
      * 
-     * @var string
+     * @property string
      */
-    public $mediaUrl = null;
+    public $mediaUrl;
 
     /**
      * Render view file with layout

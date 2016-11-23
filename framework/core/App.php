@@ -20,7 +20,7 @@ class App
      * 
      * @var framework\core\App 
      */
-    public static $get = null;
+    public static $get;
     
     /**
      * Application config
@@ -34,49 +34,49 @@ class App
      * 
      * @var \framework\core\Database 
      */
-    private $_dbHandler = null;
+    private $_dbHandler;
     
     /**
      * Front controller handler
      * 
      * @var \framework\components\FrontController  
      */
-    private $_fcHandler = null;
+    private $_fcHandler;
     
     /**
      * Module
      * 
      * @var array 
      */
-    private $_module = null;
+    private $_module;
     
     /**
      * Controller
      * 
      * @var string 
      */
-    private $_controller = null;
+    private $_controller;
     
     /**
      * Action
      * 
      * @var string 
      */
-    private $_action = null;
+    private $_action;
     
     /**
      * Request component handler
      * 
      * @var framework\components\Request 
      */
-    public $request = null;
+    public $request;
     
     /**
      * Base url
      * 
      * @var string 
      */
-    public $baseUrl = null;
+    public $baseUrl;
 
     /**
      * Class constructor
@@ -128,7 +128,7 @@ class App
      */
     public static function start(array $config)
     {
-        self::$get = new self($config);
+        self::$get = new static($config);
         
         // framework initialization
         self::$get->init();
@@ -138,9 +138,10 @@ class App
         
         // set front controller handler
         self::$get->_fcHandler = new \framework\components\FrontController(
-            // get query options
-            self::$get->router()->parseQuery($_GET)
-        );
+                // get query options
+                self::$get->router()->parseQuery($_GET)
+            );
+        
         // run action
         self::$get->_fcHandler->run();
     }
@@ -222,11 +223,12 @@ class App
     /**
      * Get current configuration
      * 
+     * @param string|null
      * @return mixed
      */
     public function config($param = null)
     {
-        if (null === $param) {
+        if (empty($param)) {
             return self::$get->_config;
         }
         return (isset(self::$get->_config[$param])) ? self::$get->_config[$param] : null;

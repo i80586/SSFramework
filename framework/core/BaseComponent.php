@@ -3,7 +3,7 @@
 namespace framework\core;
 
 /**
- * Base class of all components
+ * Base class of components
  *
  * @author Rasim Ashurov <rasim.ashurov@gmail.com>
  * @date 15 May 2014
